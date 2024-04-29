@@ -21,12 +21,13 @@ class Employee:
         self.emp_name = emp_name
         self.emp_ID = emp_ID
         self.department = department
-        self.job_title = job_title
-        self.b_salary = self.basic_salary(job_title)
+        self.job_title = Job_Title(job_title) if job_title is not None else None  # Ensure job_title is an Enum value
+        self.b_salary = self.basic_salary(self.job_title)  # Pass job_title to basic_salary method
         self.age = age
         self.dob = dob
         self.passport = passport
         self.manager = None
+
 
     def basic_salary(self, job_title):
         salaries = {
@@ -206,8 +207,6 @@ def modify_employee():
                     emp.emp_name = entry_detail.get()
                 elif detail == "Department":
                     emp.department = entry_detail.get()
-                elif detail == "Job Title":
-                    emp.job_title = job_title_var.get()  # Directly set the job title without using enumeration
                 elif detail == "Age":
                     emp.age = int(entry_detail.get())
                 elif detail == "Date of Birth":
@@ -230,13 +229,17 @@ def modify_employee():
         entry_detail = tk.Entry(modify_window)
         entry_detail.grid(row=0, column=1)
 
-        if detail == "Job Title":
-            job_titles = [title.value for title in Job_Title]
-            job_title_var = tk.StringVar(modify_window)
-            job_title_var.set(emp.job_title.value)  # Default value
-            dropdown_job_title = tk.OptionMenu(modify_window, job_title_var, *job_titles)
-            dropdown_job_title.grid(row=0, column=1)
-            entry_detail.destroy()  # Destroy the entry field for job title
+        # Set default value in entry field based on the selected detail
+        if detail == "Name":
+            entry_detail.insert(0, emp.emp_name)
+        elif detail == "Department":
+            entry_detail.insert(0, emp.department)
+        elif detail == "Age":
+            entry_detail.insert(0, emp.age)
+        elif detail == "Date of Birth":
+            entry_detail.insert(0, emp.dob)
+        elif detail == "Passport":
+            entry_detail.insert(0, emp.passport)
 
         # Button to save the changes
         btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
@@ -254,7 +257,7 @@ def modify_employee():
                     modify_window.title("Modify Employee Details")
 
                     # Create a menu with different options for modifying employee details
-                    options = ["Name", "Department", "Job Title", "Age", "Date of Birth", "Passport"]
+                    options = ["Name", "Department", "Age", "Date of Birth", "Passport"]
                     for i, option in enumerate(options):
                         btn_option = tk.Button(modify_window, text=option,
                                                command=lambda o=option: modify_details(emp, o))
@@ -278,6 +281,8 @@ def modify_employee():
     # Button to verify Employee ID
     btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
     btn_verify.grid(row=1, column=0, columnspan=2)
+
+# Update the button in main() to pass the root as an argument
 
 
 def display_employee(root):
