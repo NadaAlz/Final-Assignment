@@ -72,8 +72,8 @@ def add_new_employee():
             dept = entry_dept.get().strip()
             job_title = job_title_var.get()
             age = int(entry_age.get())
-            dob = entry_dob.get()
-            passport = entry_passport.get()
+            dob = entry_dob.get().strip()
+            passport = entry_passport.get().strip()
 
             # Check if all details are entered
             if not (name and emp_id and dept and job_title and dob and passport):
@@ -96,15 +96,19 @@ def add_new_employee():
                 return
 
             # Check if age is more than 17
-            if age <= 17 and age>=80:
-                messagebox.showerror("Error", "Age must be more than 17 and less than 80.")
+            if age <= 17:
+                messagebox.showerror("Error", "Age must be more than 17.")
                 return
 
-            # Check if emp_id already exists
-            for emp in employees:
-                if emp.emp_ID == emp_id:
-                    messagebox.showerror("Error", "Employee with the same ID already exists.")
-                    return
+            # Check if dob follows the format 00-00-0000
+            if not re.match(r"\d{2}-\d{2}-\d{4}", dob):
+                messagebox.showerror("Error", "Date of Birth must be in the format DD-MM-YYYY.")
+                return
+
+            # Check if passport has a length of 8 characters with only letters and numbers
+            if not re.match(r"^[a-zA-Z0-9]{8}$", passport):
+                messagebox.showerror("Error","Passport must be 8 characters long and contain only letters and numbers.")
+                return
 
             # Create a new employee object
             new_employee = Employee(name, emp_id, dept, job_title, age, dob, passport)
@@ -195,25 +199,51 @@ def delete_employee():
 def modify_employee():
     modify_window = None  # Define modify_window as a global variable
 
-    def modify_details(emp, entry_name, entry_dept, job_title_var, entry_age, entry_dob, entry_passport):
-        try:
-            # Function to modify employee details
-            emp.emp_name = entry_name.get()
-            emp.department = entry_dept.get()
-            emp.job_title = job_title_var.get()  # Directly set the job title without using enumeration
-            emp.age = int(entry_age.get())
-            emp.dob = entry_dob.get()
-            emp.passport = entry_passport.get()
-            messagebox.showinfo("Success", "Employee details modified successfully.")
-            modify_window.destroy()
-        except ValueError:
-            messagebox.showerror("Error", "Please enter a valid age.")
+    def modify_details(emp, detail):
+        def save_changes():
+            try:
+                if detail == "Name":
+                    emp.emp_name = entry_detail.get()
+                elif detail == "Department":
+                    emp.department = entry_detail.get()
+                elif detail == "Job Title":
+                    emp.job_title = job_title_var.get()  # Directly set the job title without using enumeration
+                elif detail == "Age":
+                    emp.age = int(entry_detail.get())
+                elif detail == "Date of Birth":
+                    emp.dob = entry_detail.get()
+                elif detail == "Passport":
+                    emp.passport = entry_detail.get()
+
+                messagebox.showinfo("Success", f"Employee {detail} modified successfully.")
+                modify_window.destroy()
+            except ValueError:
+                messagebox.showerror("Error", "Please enter a valid value.")
+
+        # Create a new window for modifying the selected detail
+        modify_window = tk.Toplevel()
+        modify_window.title(f"Modify {detail}")
+
+        # Label and entry field for the selected detail
+        lbl_detail = tk.Label(modify_window, text=f"{detail}:")
+        lbl_detail.grid(row=0, column=0, sticky="w")
+        entry_detail = tk.Entry(modify_window)
+        entry_detail.grid(row=0, column=1)
+
+        if detail == "Job Title":
+            job_titles = [title.value for title in Job_Title]
+            job_title_var = tk.StringVar(modify_window)
+            job_title_var.set(emp.job_title.value)  # Default value
+            dropdown_job_title = tk.OptionMenu(modify_window, job_title_var, *job_titles)
+            dropdown_job_title.grid(row=0, column=1)
+            entry_detail.destroy()  # Destroy the entry field for job title
+
+        # Button to save the changes
+        btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
+        btn_save.grid(row=1, column=0, columnspan=2)
 
     def verify_id():
         try:
-            # Define job_titles here or pass it as an argument to verify_id() if it's defined elsewhere
-            job_titles = [title.value for title in Job_Title]
-
             # Function to verify Employee ID
             emp_id = entry_id.get()
             for emp in employees:
@@ -223,44 +253,13 @@ def modify_employee():
                     modify_window = tk.Toplevel()
                     modify_window.title("Modify Employee Details")
 
-                    # Label and entry fields for modified details
-                    lbl_name = tk.Label(modify_window, text="Name:")
-                    lbl_name.grid(row=0, column=0, sticky="w")
-                    entry_name = tk.Entry(modify_window)
-                    entry_name.grid(row=0, column=1)
+                    # Create a menu with different options for modifying employee details
+                    options = ["Name", "Department", "Job Title", "Age", "Date of Birth", "Passport"]
+                    for i, option in enumerate(options):
+                        btn_option = tk.Button(modify_window, text=option,
+                                               command=lambda o=option: modify_details(emp, o))
+                        btn_option.grid(row=i, column=0, columnspan=2)
 
-                    lbl_dept = tk.Label(modify_window, text="Department:")
-                    lbl_dept.grid(row=1, column=0, sticky="w")
-                    entry_dept = tk.Entry(modify_window)
-                    entry_dept.grid(row=1, column=1)
-
-                    lbl_job_title = tk.Label(modify_window, text="Job Title:")
-                    lbl_job_title.grid(row=2, column=0, sticky="w")
-                    job_title_var = tk.StringVar(modify_window)
-                    job_title_var.set(job_titles[0])  # Default value
-                    dropdown_job_title = tk.OptionMenu(modify_window, job_title_var, *job_titles)
-                    dropdown_job_title.grid(row=2, column=1)
-
-                    lbl_age = tk.Label(modify_window, text="Age:")
-                    lbl_age.grid(row=3, column=0, sticky="w")
-                    entry_age = tk.Entry(modify_window)
-                    entry_age.grid(row=3, column=1)
-
-                    lbl_dob = tk.Label(modify_window, text="Date of Birth:")
-                    lbl_dob.grid(row=4, column=0, sticky="w")
-                    entry_dob = tk.Entry(modify_window)
-                    entry_dob.grid(row=4, column=1)
-
-                    lbl_passport = tk.Label(modify_window, text="Passport:")
-                    lbl_passport.grid(row=5, column=0, sticky="w")
-                    entry_passport = tk.Entry(modify_window)
-                    entry_passport.grid(row=5, column=1)
-
-                    # Button to modify employee details
-                    btn_modify = tk.Button(modify_window, text="Modify",
-                                           command=lambda: modify_details(emp, entry_name, entry_dept, job_title_var,
-                                                                          entry_age, entry_dob, entry_passport))
-                    btn_modify.grid(row=6, column=0, columnspan=2)
                     return
             messagebox.showerror("Error", "Employee not found.")
         except ValueError:
