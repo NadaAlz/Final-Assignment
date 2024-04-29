@@ -97,8 +97,8 @@ def add_new_employee():
                 return
 
             # Check if age is more than 17
-            if age <= 17:
-                messagebox.showerror("Error", "Age must be more than 17.")
+            if age <= 17 and age>=80:
+                messagebox.showerror("Error", "Age must be more than 17 and less than 80.")
                 return
 
             # Check if dob follows the format 00-00-0000
