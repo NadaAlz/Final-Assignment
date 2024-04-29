@@ -395,4 +395,3 @@ def main():
 if __name__ == "__main__":
     employees = []  # Global list to store employees
     main()
-
