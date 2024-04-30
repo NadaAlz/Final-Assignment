@@ -54,6 +54,11 @@ class Client:
         if not (budget.replace('.', '', 1).isdigit()):  # Check if it's a valid floating-point number
             raise ValueError("Budget must be a valid number.")
 
+        # Check if the ID already exists
+        for client in clients:
+            if client.clt_ID == clt_ID:
+                raise ValueError("Client with the same ID already exists.")
+
         new_client = Client(clt_name, clt_ID, clt_address, clt_contact_details, float(budget))
         clients.append(new_client)
         return new_client
