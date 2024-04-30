@@ -40,20 +40,6 @@ class Employee:
 
     def assign_manager(self,manager):
         pass
-        #if self == manager:
-         #   print("A manager cannot be assigned as the manager for himself.")
-        #elif isinstance(manager, Manager) and manager.department == self.department:
-         #   if manager.job_title in [Job_Title.SM, Job_Title.MM]:
-          #      if not isinstance(self, Manager):
-           #         self.manager = manager
-            #        manager.add_employee(self)  # Add the employee to the manager's list of employees
-             #       print(manager.emp_name, "is now the manager of", self.emp_name)
-              #  else:
-               #     print("Employee cannot be assigned as a manager.")
-            #else:
-             #   print("Manager must be either a Sales Manager or Marketing Manager.")
-        #else:
-         #   print("Invalid manager assignment. The manager and employee must belong to the same department.")
 
     def display_employee(self):
         manager_info = ""
