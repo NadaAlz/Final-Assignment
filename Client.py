@@ -1,74 +1,71 @@
 import tkinter as tk
 from tkinter import messagebox
-
+import re
 
 class Client:
-  """Class to represent a client"""
-  def __init__(self, clt_name='', clt_ID='', clt_address='', clt_contact_details='', budget=0.0):
-    self.clt_name = clt_name
-    self.clt_ID = clt_ID
-    self.clt_address = clt_address
-    self.clt_contact_details = clt_contact_details
-    self.budget = budget
+    """Class to represent a client"""
+    def __init__(self, clt_name='', clt_ID='', clt_address='', clt_contact_details='', budget=0.0):
+        self.clt_name = clt_name
+        self.clt_ID = clt_ID
+        self.clt_address = clt_address
+        self.clt_contact_details = clt_contact_details
+        self.budget = budget
 
+    def set_clt_name(self, clt_name):
+        self.clt_name = clt_name
 
-  def set_clt_name(self,clt_name):
-      self.clt_name = clt_name
+    def set_clt_ID(self, clt_ID):
+        self.clt_ID = clt_ID
 
-  def set_clt_ID(self,clt_ID):
-      self.clt_ID = clt_ID
+    def set_clt_address(self, clt_address):
+        self.clt_address = clt_address
 
-  def set_clt_address(self,clt_address):
-      self.clt_address = clt_address
+    def set_clt_contact_details(self, clt_contact_details):
+        self.clt_contact_details = clt_contact_details
 
-  def set_clt_contact_details(self,clt_contact_details):
-      self.clt_contact_details = clt_contact_details
+    def set_budget(self, budget):
+        self.budget = budget
 
-  def set_budget(self,budget):
-      self.budget = budget
+    def get_clt_name(self):
+        return self.clt_name
 
+    def get_clt_ID(self):
+        return self.clt_ID
 
-  def get_clt_name(self):
-      return self.clt_name
+    def get_clt_address(self):
+        return self.clt_address
 
+    def get_clt_contact_details(self):
+        return self.clt_contact_details
 
-  def get_clt_ID(self):
-      return self.clt_ID
+    def get_budget(self):
+        return self.budget
 
-  def get_clt_address(self):
-      return self.clt_address
+    def add_client(self, clients, clt_name, clt_ID, clt_address, clt_contact_details, budget):
+        # Validation
+        if not (clt_name.strip().replace(" ", "").isalpha()):
+            raise ValueError("Name must contain only letters and spaces.")
+        if not (clt_ID.isdigit()):
+            raise ValueError("Client ID must contain only numbers.")
+        if not (clt_address.strip().replace(" ", "").isalnum()):
+            raise ValueError("Address must contain only letters, numbers, and spaces.")
+        if not re.match(r"^\d{9}$", clt_contact_details):
+            raise ValueError("Contact details must be a phone number with a length of 9 digits.")
+        if not (budget.replace('.', '', 1).isdigit()):  # Check if it's a valid floating-point number
+            raise ValueError("Budget must be a valid number.")
 
-  def get_clt_contact_details(self):
-      return self.clt_contact_details
+        new_client = Client(clt_name, clt_ID, clt_address, clt_contact_details, float(budget))
+        clients.append(new_client)
+        return new_client
 
-  def get_budget(self):
-      return self.budget
-
-  def add_client(self, clients, clt_name, clt_ID, clt_address, clt_contact_details, budget):
-      # Validation
-      if not (clt_name.strip().replace(" ", "").isalpha()):
-          raise ValueError("Name must contain only letters and spaces.")
-      if not (clt_ID.isdigit()):
-          raise ValueError("Client ID must contain only numbers.")
-      if not (clt_address.strip().replace(" ", "").isalnum()):
-          raise ValueError("Address must contain only letters, numbers, and spaces.")
-      if not re.match(r"^\d{9}$", clt_contact_details):
-          raise ValueError("Contact details must be a phone number with a length of 9 digits.")
-      if not (budget.isdigit()):
-          raise ValueError("Budget must contain only numbers.")
-
-      new_client = Client(clt_name, clt_ID, clt_address, clt_contact_details, budget)
-      clients.append(new_client)
-      return new_client
-
-  def delete_client(self, clients, clt_ID):
+    def delete_client(self, clients, clt_ID):
         for client in clients:
             if client.clt_ID == clt_ID:
                 clients.remove(client)
                 return True
         return False
 
-  def modify_client(self, clients, clt_ID, clt_name=None, clt_address=None, clt_contact_details=None, budget=None):
+    def modify_client(self, clients, clt_ID, clt_name=None, clt_address=None, clt_contact_details=None, budget=None):
         for client in clients:
             if client.clt_ID == clt_ID:
                 if clt_name is not None:
@@ -78,11 +75,11 @@ class Client:
                 if clt_contact_details is not None:
                     client.clt_contact_details = clt_contact_details
                 if budget is not None:
-                    client.budget = budget
+                    client.budget = float(budget)
                 return True
         return False
 
-  def display_client(self, clients, clt_ID):
+    def display_client(self, clients, clt_ID):
         for client in clients:
             if client.clt_ID == clt_ID:
                 return client
@@ -106,7 +103,6 @@ class ClientManagementGUI:
         self.btn_display = tk.Button(master, text="Display Client", command=self.display_client)
         self.btn_display.pack()
 
-
     def add_client(self):
         def save_client():
             try:
@@ -117,49 +113,48 @@ class ClientManagementGUI:
                 clt_contact_details = entry_contact_details.get()
                 budget = entry_budget.get()
 
-                    # Add client with input details
-                new_client = Client().add_client(self.clients, clt_name, clt_ID, clt_address, clt_contact_details,
-                                                     budget)
+                # Add client with input details
+                new_client = Client().add_client(self.clients, clt_name, clt_ID, clt_address, clt_contact_details, budget)
 
-                    # Close the add window
-                    add_window.destroy()
-                    messagebox.showinfo("Success", "Client added successfully.")
-                except ValueError as e:
-                    messagebox.showerror("Error", str(e))
+                # Close the add window
+                add_window.destroy()
+                messagebox.showinfo("Success", "Client added successfully.")
+            except ValueError as e:
+                messagebox.showerror("Error", str(e))
 
-            # Create a new window for adding client details
-            add_window = tk.Toplevel(self.master)
-            add_window.title("Add New Client")
+        # Create a new window for adding client details
+        add_window = tk.Toplevel(self.master)
+        add_window.title("Add New Client")
 
-            # Define labels and entry fields for client details
-            lbl_name = tk.Label(add_window, text="Name:")
-            lbl_name.grid(row=0, column=0, sticky="w")
-            entry_name = tk.Entry(add_window)
-            entry_name.grid(row=0, column=1)
+        # Define labels and entry fields for client details
+        lbl_name = tk.Label(add_window, text="Name:")
+        lbl_name.grid(row=0, column=0, sticky="w")
+        entry_name = tk.Entry(add_window)
+        entry_name.grid(row=0, column=1)
 
-            lbl_id = tk.Label(add_window, text="Client ID:")
-            lbl_id.grid(row=1, column=0, sticky="w")
-            entry_id = tk.Entry(add_window)
-            entry_id.grid(row=1, column=1)
+        lbl_id = tk.Label(add_window, text="Client ID:")
+        lbl_id.grid(row=1, column=0, sticky="w")
+        entry_id = tk.Entry(add_window)
+        entry_id.grid(row=1, column=1)
 
-            lbl_address = tk.Label(add_window, text="Address:")
-            lbl_address.grid(row=2, column=0, sticky="w")
-            entry_address = tk.Entry(add_window)
-            entry_address.grid(row=2, column=1)
+        lbl_address = tk.Label(add_window, text="Address:")
+        lbl_address.grid(row=2, column=0, sticky="w")
+        entry_address = tk.Entry(add_window)
+        entry_address.grid(row=2, column=1)
 
-            lbl_contact_details = tk.Label(add_window, text="Contact Details:")
-            lbl_contact_details.grid(row=3, column=0, sticky="w")
-            entry_contact_details = tk.Entry(add_window)
-            entry_contact_details.grid(row=3, column=1)
+        lbl_contact_details = tk.Label(add_window, text="Contact Details:")
+        lbl_contact_details.grid(row=3, column=0, sticky="w")
+        entry_contact_details = tk.Entry(add_window)
+        entry_contact_details.grid(row=3, column=1)
 
-            lbl_budget = tk.Label(add_window, text="Budget:")
-            lbl_budget.grid(row=4, column=0, sticky="w")
-            entry_budget = tk.Entry(add_window)
-            entry_budget.grid(row=4, column=1)
+        lbl_budget = tk.Label(add_window, text="Budget:")
+        lbl_budget.grid(row=4, column=0, sticky="w")
+        entry_budget = tk.Entry(add_window)
+        entry_budget.grid(row=4, column=1)
 
-            # Button to save the client details
-            btn_save = tk.Button(add_window, text="Save", command=save_client)
-            btn_save.grid(row=5, column=0, columnspan=2)
+        # Button to save the client details
+        btn_save = tk.Button(add_window, text="Save", command=save_client)
+        btn_save.grid(row=5, column=0, columnspan=2)
 
     def delete_client(self):
         def delete():
@@ -193,7 +188,7 @@ class ClientManagementGUI:
                 clt_name = entry_name.get().strip()
                 clt_address = entry_address.get().strip()
                 clt_contact_details = entry_contact_details.get().strip()
-                budget = float(entry_budget.get().strip())
+                budget = entry_budget.get().strip()
 
                 if Client().modify_client(self.clients, clt_ID, clt_name, clt_address, clt_contact_details, budget):
                     messagebox.showinfo("Success", "Client details modified successfully.")
