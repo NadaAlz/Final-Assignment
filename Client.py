@@ -182,54 +182,96 @@ class ClientManagementGUI:
         btn_delete.grid(row=1, column=0, columnspan=2)
 
     def modify_client(self):
-        def modify():
+        modify_window = None  # Define modify_window as a global variable
+
+        def modify_details(client, detail):
+            def save_changes():
+                try:
+                    new_detail = entry_detail.get().strip()
+
+                    if detail == "Name":
+                        if not (new_detail.replace(" ", "").isalpha()):
+                            raise ValueError("Name must contain only letters and spaces.")
+                        client.clt_name = new_detail
+                    elif detail == "Address":
+                        if not (new_detail.replace(" ", "").isalnum()):
+                            raise ValueError("Address must contain only letters, numbers, and spaces.")
+                        client.clt_address = new_detail
+                    elif detail == "Contact Details":
+                        if not re.match(r"^\d{9}$", new_detail):
+                            raise ValueError("Contact details must be a phone number with a length of 9 digits.")
+                        client.clt_contact_details = new_detail
+                    elif detail == "Budget":
+                        if not (
+                        new_detail.replace('.', '', 1).isdigit()):  # Check if it's a valid floating-point number
+                            raise ValueError("Budget must be a valid number.")
+                        client.budget = float(new_detail)
+
+                    messagebox.showinfo("Success", f"Client {detail} modified successfully.")
+                    modify_window.destroy()
+                except ValueError as e:
+                    messagebox.showerror("Error", str(e))
+
+            # Create a new window for modifying the selected detail
+            modify_window = tk.Toplevel()
+            modify_window.title(f"Modify {detail}")
+
+            # Label and entry field for the selected detail
+            lbl_detail = tk.Label(modify_window, text=f"{detail}:")
+            lbl_detail.grid(row=0, column=0, sticky="w")
+            entry_detail = tk.Entry(modify_window)
+            entry_detail.grid(row=0, column=1)
+
+            # Set default value in entry field based on the selected detail
+            if detail == "Name":
+                entry_detail.insert(0, client.clt_name)
+            elif detail == "Address":
+                entry_detail.insert(0, client.clt_address)
+            elif detail == "Contact Details":
+                entry_detail.insert(0, client.clt_contact_details)
+            elif detail == "Budget":
+                entry_detail.insert(0, client.budget)
+
+            # Button to save the changes
+            btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
+            btn_save.grid(row=1, column=0, columnspan=2)
+
+        def verify_id():
             try:
-                clt_ID = entry_id.get().strip()
-                clt_name = entry_name.get().strip()
-                clt_address = entry_address.get().strip()
-                clt_contact_details = entry_contact_details.get().strip()
-                budget = entry_budget.get().strip()
+                # Function to verify Client ID
+                clt_ID = entry_id.get()
+                for client in self.clients:
+                    if client.clt_ID == clt_ID:
+                        # If ID is correct, show the modify menu
+                        nonlocal modify_window
+                        modify_window = tk.Toplevel()
+                        modify_window.title("Modify Client Details")
 
-                if Client().modify_client(self.clients, clt_ID, clt_name, clt_address, clt_contact_details, budget):
-                    messagebox.showinfo("Success", "Client details modified successfully.")
-                else:
-                    messagebox.showerror("Error", "Client not found.")
+                        # Create a menu with different options for modifying client details
+                        options = ["Name", "Address", "Contact Details", "Budget"]
+                        for i, option in enumerate(options):
+                            btn_option = tk.Button(modify_window, text=option,
+                                                   command=lambda o=option: modify_details(client, o))
+                            btn_option.grid(row=i, column=0, columnspan=2)
+
+                        return
+                messagebox.showerror("Error", "Client not found.")
             except ValueError:
-                messagebox.showerror("Error", "Please enter a valid budget.")
+                messagebox.showerror("Error", "Please enter a valid client ID.")
 
-        # Create a new window for modifying client details
-        modify_window = tk.Toplevel(self.master)
-        modify_window.title("Modify Client")
+        # Create a new window for verifying Client ID
+        verify_window = tk.Toplevel(self.master)
+        verify_window.title("Verify Client ID")
 
         # Label and entry field for Client ID
-        lbl_id = tk.Label(modify_window, text="Client ID:")
+        lbl_id = tk.Label(verify_window, text="Client ID:")
         lbl_id.grid(row=0, column=0, sticky="w")
-        entry_id = tk.Entry(modify_window)
+        entry_id = tk.Entry(verify_window)
         entry_id.grid(row=0, column=1)
 
-        lbl_name = tk.Label(modify_window, text="New Name:")
-        lbl_name.grid(row=1, column=0, sticky="w")
-        entry_name = tk.Entry(modify_window)
-        entry_name.grid(row=1, column=1)
-
-        lbl_address = tk.Label(modify_window, text="New Address:")
-        lbl_address.grid(row=2, column=0, sticky="w")
-        entry_address = tk.Entry(modify_window)
-        entry_address.grid(row=2, column=1)
-
-        lbl_contact_details = tk.Label(modify_window, text="New Contact Details:")
-        lbl_contact_details.grid(row=3, column=0, sticky="w")
-        entry_contact_details = tk.Entry(modify_window)
-        entry_contact_details.grid(row=3, column=1)
-
-        lbl_budget = tk.Label(modify_window, text="New Budget:")
-        lbl_budget.grid(row=4, column=0, sticky="w")
-        entry_budget = tk.Entry(modify_window)
-        entry_budget.grid(row=4, column=1)
-
-        # Button to modify client details
-        btn_modify = tk.Button(modify_window, text="Modify", command=modify)
-        btn_modify.grid(row=5, column=0, columnspan=2)
+        # Button to verify Client ID
+        btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
+        btn_verify.grid(row=1, column=0, columnspan=2)
 
     def display_client(self):
         def display():
