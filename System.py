@@ -8,15 +8,13 @@ from Client import Client
 from Guest import Guest
 
 from Venue import Venue
-from Event import Event
-from Event import Theme
 
 
 from Supplier import Supplier
 from Supplier import S_Type
 
 import tkinter as tk
-from tkinter import messagebox, OptionMenu, Toplevel, Label, Entry, Button
+from tkinter import messagebox
 import re
 
 
@@ -30,7 +28,7 @@ class IntegratedSystemGUI:
         self.suppliers = []
         self.supplier = Supplier()
         self.events = []
-        self.event = Event()
+       # self.event = Event()
         master.title("Integrated System")
 
         # Create buttons for each entity
@@ -49,7 +47,31 @@ class IntegratedSystemGUI:
         self.btn_guest = tk.Button(master, text="Guest", command=self.manage_guests)
         self.btn_guest.pack()
 
+        self.btn_event = tk.Button(master, text="Event", command=self.manage_events)
+        self.btn_event.pack()
 
+
+    def manage_events(self):
+        pass
+
+
+
+
+
+        #event_window = tk.Toplevel(self.master)
+        #event_window.title("Manage Events")
+
+        #btn_add = tk.Button(event_window, text="Add Event", command=add_event)
+        #btn_add.pack()
+
+        #btn_delete = tk.Button(event_window, text="Delete Event", command=delete_event)
+        #btn_delete.pack()
+
+        #btn_modify = tk.Button(event_window, text="Modify Event", command=modify_event)
+        #btn_modify.pack()
+
+        #btn_display = tk.Button(event_window, text="Display Event", command=display_event)
+        #btn_display.pack()
 
 
     def manage_employees(self):
