@@ -2,7 +2,7 @@ import re
 
 class Client:
     """Class to represent a client"""
-    def __init__(self, clt_name='', clt_ID='', clt_address='', clt_contact_details='', budget=0.0):
+    def __init__(self, clt_name='', clt_ID=0, clt_address='', clt_contact_details='', budget=0.0):
         self.clt_name = clt_name
         self.clt_ID = clt_ID
         self.clt_address = clt_address
