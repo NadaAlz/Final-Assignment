@@ -9,6 +9,9 @@ from Guest import Guest
 
 from Venue import Venue
 
+from Supplier import Supplier
+from Supplier import S_Type
+
 import tkinter as tk
 from tkinter import messagebox
 import re
@@ -20,6 +23,8 @@ class IntegratedSystemGUI:
         self.guest_management = Guest()
         self.guests = []
         self.venues = []
+        self.suppliers = []
+        self.supplier = Supplier()
         master.title("Integrated System")
 
         # Create buttons for each entity
@@ -379,7 +384,6 @@ class IntegratedSystemGUI:
 
         btn_display = tk.Button(employee_window, text="Assign Manager", command=assign_manager)
         btn_display.pack()
-
 
 
     def manage_events(self):
@@ -866,16 +870,151 @@ class IntegratedSystemGUI:
     def manage_suppliers(self):
         # Implement functionality to manage suppliers
         def add_supplier():
-            pass
+            def save_supplier():
+                s_name = entry_name.get().strip()
+                s_ID = entry_id.get().strip()
+                s_address = entry_address.get().strip()
+                s_contact_details = entry_contact_details.get().strip()
+                s_type = S_Type(entry_type_var.get())
+
+                success, message = self.supplier.add_supplier(self.suppliers, s_name, s_ID, s_type, s_address,
+                                                              s_contact_details)
+                if success:
+                    add_window.destroy()
+                    messagebox.showinfo("Success", message)
+                else:
+                    messagebox.showerror("Error", message)
+
+            add_window = tk.Toplevel(self.master)
+            add_window.title("Add New Supplier")
+
+            lbl_name = tk.Label(add_window, text="Name:")
+            lbl_name.grid(row=0, column=0, sticky="w")
+            entry_name = tk.Entry(add_window)
+            entry_name.grid(row=0, column=1)
+
+            lbl_id = tk.Label(add_window, text="Supplier ID:")
+            lbl_id.grid(row=1, column=0, sticky="w")
+            entry_id = tk.Entry(add_window)
+            entry_id.grid(row=1, column=1)
+
+            lbl_address = tk.Label(add_window, text="Address:")
+            lbl_address.grid(row=2, column=0, sticky="w")
+            entry_address = tk.Entry(add_window)
+            entry_address.grid(row=2, column=1)
+
+            lbl_contact_details = tk.Label(add_window, text="Contact Details:")
+            lbl_contact_details.grid(row=3, column=0, sticky="w")
+            entry_contact_details = tk.Entry(add_window)
+            entry_contact_details.grid(row=3, column=1)
+
+            lbl_type = tk.Label(add_window, text="Type:")
+            lbl_type.grid(row=4, column=0, sticky="w")
+            types = [t.value for t in S_Type]
+            entry_type_var = tk.StringVar(add_window)
+            entry_type_var.set(types[0])
+            dropdown_type = tk.OptionMenu(add_window, entry_type_var, *types)
+            dropdown_type.grid(row=4, column=1)
+
+            btn_save = tk.Button(add_window, text="Save", command=save_supplier)
+            btn_save.grid(row=5, column=0, columnspan=2)
 
         def delete_supplier():
-            pass
+            def delete():
+                s_ID = entry_id.get().strip()
+                success, message = self.supplier.delete_supplier(self.suppliers, s_ID)
+                if success:
+                    delete_window.destroy()
+                    messagebox.showinfo("Success", message)
+                else:
+                    messagebox.showerror("Error", message)
+
+            delete_window = tk.Toplevel(self.master)
+            delete_window.title("Delete Supplier")
+
+            lbl_id = tk.Label(delete_window, text="Supplier ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_id = tk.Entry(delete_window)
+            entry_id.grid(row=0, column=1)
+
+            btn_delete = tk.Button(delete_window, text="Delete", command=delete)
+            btn_delete.grid(row=1, column=0, columnspan=2)
 
         def modify_supplier():
-            pass
+            def modify_details(supplier, detail):
+                def save_changes():
+                    new_detail = entry_detail.get().strip()
+                    success, message = self.supplier.modify_supplier(self.suppliers, supplier.s_ID, detail, new_detail)
+                    if success:
+                        modify_window.destroy()
+                        messagebox.showinfo("Success", message)
+                    else:
+                        messagebox.showerror("Error", message)
+
+                modify_window = tk.Toplevel()
+                modify_window.title(f"Modify {detail}")
+
+                lbl_detail = tk.Label(modify_window, text=f"{detail}:")
+                lbl_detail.grid(row=0, column=0, sticky="w")
+                entry_detail = tk.Entry(modify_window)
+                entry_detail.grid(row=0, column=1)
+
+                if detail == "Name":
+                    entry_detail.insert(0, supplier.s_name)
+                elif detail == "Address":
+                    entry_detail.insert(0, supplier.s_address)
+                elif detail == "Contact Details":
+                    entry_detail.insert(0, supplier.s_contact_details)
+
+                btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
+                btn_save.grid(row=1, column=0, columnspan=2)
+
+            def verify_id():
+                s_ID = entry_id.get()
+                for supplier in self.suppliers:
+                    if supplier.s_ID == s_ID:
+                        modify_window = tk.Toplevel()
+                        modify_window.title("Modify Supplier Details")
+
+                        options = ["Name", "Address", "Contact Details"]
+                        for i, option in enumerate(options):
+                            btn_option = tk.Button(modify_window, text=option,
+                                                   command=lambda o=option: modify_details(supplier, o))
+                            btn_option.grid(row=i, column=0, columnspan=2)
+
+                        return
+                messagebox.showerror("Error", "Supplier not found.")
+
+            verify_window = tk.Toplevel(self.master)
+            verify_window.title("Verify Supplier ID")
+
+            lbl_id = tk.Label(verify_window, text="Supplier ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_id = tk.Entry(verify_window)
+            entry_id.grid(row=0, column=1)
+
+            btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
+            btn_verify.grid(row=1, column=0, columnspan=2)
 
         def display_supplier():
-            pass
+            def display():
+                s_ID = entry_id.get().strip()
+                success, message = self.supplier.display_supplier(self.suppliers, s_ID)
+                if success:
+                    messagebox.showinfo("Supplier Details", message)
+                else:
+                    messagebox.showerror("Error", message)
+
+            display_window = tk.Toplevel(self.master)
+            display_window.title("Display Supplier Details")
+
+            lbl_id = tk.Label(display_window, text="Supplier ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_id = tk.Entry(display_window)
+            entry_id.grid(row=0, column=1)
+
+            btn_display = tk.Button(display_window, text="Display", command=display)
+            btn_display.grid(row=1, column=0, columnspan=2)
 
         supplier_window = tk.Toplevel(self.master)
         supplier_window.title("Manage Suppliers")
