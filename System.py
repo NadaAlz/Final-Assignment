@@ -29,7 +29,7 @@ class IntegratedSystemGUI:
         self.supplier = Supplier()
         self.events = []
        # self.event = Event()
-        master.title("Integrated System")
+        master.title("The Best Events Company System")
 
         # Create buttons for each entity
         self.btn_employee = tk.Button(master, text="Employee", command=self.manage_employees)
