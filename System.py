@@ -7,6 +7,8 @@ from Client import Client
 
 from Guest import Guest
 
+from Venue import Venue
+
 import tkinter as tk
 from tkinter import messagebox
 import re
@@ -17,6 +19,7 @@ class IntegratedSystemGUI:
         self.clients = []
         self.guest_management = Guest()
         self.guests = []
+        self.venues = []
         master.title("Integrated System")
 
         # Create buttons for each entity
@@ -631,7 +634,64 @@ class IntegratedSystemGUI:
     def manage_venues(self):
         # Implement functionality to manage venues
         def add_venue():
-            pass
+            def save_venue():
+                try:
+                    # Retrieve entered details
+                    v_name = entry_name.get()
+                    v_ID = entry_id.get()
+                    v_address = entry_address.get()
+                    v_contact = entry_contact.get()
+                    v_min_guests = entry_min_guests.get()
+                    v_max_guests = entry_max_guests.get()
+
+                    # Add venue with input details
+                    new_venue = Venue().add_venue(self.venues, v_name, v_ID, v_address, v_contact, v_min_guests,
+                                                  v_max_guests)
+
+                    # Close the add window
+                    add_window.destroy()
+                    messagebox.showinfo("Success", "Venue added successfully.")
+                except ValueError as e:
+                    messagebox.showerror("Error", str(e))
+
+            # Create a new window for adding venue details
+            add_window = tk.Toplevel(self.master)
+            add_window.title("Add New Venue")
+
+            # Define labels and entry fields for venue details
+            lbl_name = tk.Label(add_window, text="Name:")
+            lbl_name.grid(row=0, column=0, sticky="w")
+            entry_name = tk.Entry(add_window)
+            entry_name.grid(row=0, column=1)
+
+            lbl_id = tk.Label(add_window, text="Venue ID:")
+            lbl_id.grid(row=1, column=0, sticky="w")
+            entry_id = tk.Entry(add_window)
+            entry_id.grid(row=1, column=1)
+
+            lbl_address = tk.Label(add_window, text="Address:")
+            lbl_address.grid(row=2, column=0, sticky="w")
+            entry_address = tk.Entry(add_window)
+            entry_address.grid(row=2, column=1)
+
+            lbl_contact = tk.Label(add_window, text="Contact:")
+            lbl_contact.grid(row=3, column=0, sticky="w")
+            entry_contact = tk.Entry(add_window)
+            entry_contact.grid(row=3, column=1)
+
+            lbl_min_guests = tk.Label(add_window, text="Min Guests:")
+            lbl_min_guests.grid(row=4, column=0, sticky="w")
+            entry_min_guests = tk.Entry(add_window)
+            entry_min_guests.grid(row=4, column=1)
+
+            lbl_max_guests = tk.Label(add_window, text="Max Guests:")
+            lbl_max_guests.grid(row=5, column=0, sticky="w")
+            entry_max_guests = tk.Entry(add_window)
+            entry_max_guests.grid(row=5, column=1)
+
+            # Button to save the venue details
+            btn_save = tk.Button(add_window, text="Save", command=save_venue)
+            btn_save.grid(row=6, column=0, columnspan=2)
 
         def delete_venue():
             pass
