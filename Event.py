@@ -61,6 +61,7 @@ class Event:
       if not e_ID.isdigit():
           raise ValueError("Event ID must contain only numbers.")
 
+
       # 3. Ensure date is in the format "DD-MM-YYYY"
       try:
           datetime.strptime(date, "%d-%m-%Y")
@@ -76,7 +77,7 @@ class Event:
           raise ValueError("Duration must be a number between 1 and 10.")
 
       # 6. Verify if v_address exists in the system (assuming v_address is the venue address)
-      if v_address not in [venue.v_address for venue in self.venues]:
+      if v_address not in [venue.v_address for venue in venues]:
           raise ValueError("Venue address does not exist in the system.")
 
       # 7. Check if clt_ID is valid (assuming clt_ID is the client ID)
@@ -95,8 +96,8 @@ class Event:
                   raise ValueError(f"Service with ID {service.s_ID} does not exist in the system.")
 
       # After all validations pass, create the event
-      new_event = Event(e_ID, theme, date, time, duration, v_address, clt_ID, guests, catering, cleaning, decoration,
-                        entertainment, furniture)
+      new_event = Event(e_ID, theme, date, time, duration, v_address, clt_ID, guests, catering, cleaning,
+                        decoration, entertainment, furniture)
       events.append(new_event)
       return new_event
 
