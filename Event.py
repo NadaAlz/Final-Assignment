@@ -53,3 +53,5 @@ class Event:
 
   def get_duration(self):
       return self.duration
+
+  def add_event(self, events, e_ID, theme, date, time, duration, v_address,clt_ID,guests, catering,cleaning, decoration, entertainment, furniture):
