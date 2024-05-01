@@ -61,10 +61,6 @@ class Event:
       if not e_ID.isdigit():
           raise ValueError("Event ID must contain only numbers.")
 
-      # 2. Validate that theme is one of the choices available in the GUI
-      if theme not in [t.value for t in Theme]:
-          raise ValueError("Invalid theme choice.")
-
       # 3. Ensure date is in the format "DD-MM-YYYY"
       try:
           datetime.strptime(date, "%d-%m-%Y")
