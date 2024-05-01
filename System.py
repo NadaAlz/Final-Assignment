@@ -145,32 +145,32 @@ class IntegratedSystemGUI:
                 lbl_cleaning.grid(row=8, column=0, sticky="w")
                 cleaning_var = tk.StringVar(add_window)
                 cleaning_var.set("")  # Default value
-                cleaning_menu = OptionMenu(add_window, cleaning_var, *["Option1", "Option2",
-                                                                       "Option3"])  # Replace options with available cleaning options
+                cleaning_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.CL]
+                cleaning_menu = OptionMenu(add_window, cleaning_var, *cleaning_array)  # Replace options with available cleaning options
                 cleaning_menu.grid(row=8, column=1)
 
                 lbl_decoration = Label(add_window, text="Decoration:")
                 lbl_decoration.grid(row=9, column=0, sticky="w")
                 decoration_var = tk.StringVar(add_window)
                 decoration_var.set("")  # Default value
-                decoration_menu = OptionMenu(add_window, decoration_var, *["Option1", "Option2",
-                                                                           "Option3"])  # Replace options with available decoration options
+                decoration_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.D]
+                decoration_menu = OptionMenu(add_window, decoration_var, *decoration_array)  # Replace options with available decoration options
                 decoration_menu.grid(row=9, column=1)
 
                 lbl_entertainment = Label(add_window, text="Entertainment:")
                 lbl_entertainment.grid(row=10, column=0, sticky="w")
                 entertainment_var = tk.StringVar(add_window)
                 entertainment_var.set("")  # Default value
-                entertainment_menu = OptionMenu(add_window, entertainment_var, *["Option1", "Option2",
-                                                                                 "Option3"])  # Replace options with available entertainment options
+                entertainment_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.E]
+                entertainment_menu = OptionMenu(add_window, entertainment_var, *entertainment_array)  # Replace options with available entertainment options
                 entertainment_menu.grid(row=10, column=1)
 
                 lbl_furniture = Label(add_window, text="Furniture:")
                 lbl_furniture.grid(row=11, column=0, sticky="w")
                 furniture_var = tk.StringVar(add_window)
                 furniture_var.set("")  # Default value
-                furniture_menu = OptionMenu(add_window, furniture_var, *["Option1", "Option2",
-                                                                         "Option3"])  # Replace options with available furniture options
+                furniture_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.F]
+                furniture_menu = OptionMenu(add_window, furniture_var, *furniture_array)  # Replace options with available furniture options
                 furniture_menu.grid(row=11, column=1)
 
                 # Button to save the event details
