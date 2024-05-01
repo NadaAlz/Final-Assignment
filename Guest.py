@@ -2,7 +2,7 @@ import re
 
 class Guest:
     """Class to represent a guest"""
-    def __init__(self, gst_name='', gst_ID='', gst_address='', gst_contact_details=''):
+    def __init__(self, gst_name='', gst_ID=0, gst_address='', gst_contact_details=''):
         self.gst_name = gst_name
         self.gst_ID = gst_ID
         self.gst_address = gst_address
@@ -76,6 +76,8 @@ class Guest:
             if guest.gst_ID == gst_ID:
                 return guest
         return None
+
+
 
 
 
