@@ -125,3 +125,36 @@ class Supplier:
         except ValueError:
             return False, "Please enter a valid supplier ID."
 
+class Catering_Company(Supplier):
+    """Class to represent a catering company"""
+    def __init__(self, s_name='', s_ID='', s_type=S_Type.C, s_address='', s_contact_details='', menu=[], c_min_guests=0, c_max_guests=0):
+        super().__init__(s_name, s_ID, s_type, s_address, s_contact_details)
+        self.menu = menu
+        self.c_min_guests = c_min_guests
+        self.c_max_guests = c_max_guests
+
+    def set_menu(self, menu):
+        self.menu = menu
+
+    def set_c_min_guests(self, c_min_guests):
+        self.c_min_guests = c_min_guests
+
+    def set_c_max_guests(self, c_max_guests):
+        self.c_max_guests = c_max_guests
+
+    def get_menu(self):
+        return self.menu
+
+    def get_c_min_guests(self):
+        return self.c_min_guests
+
+    def get_c_max_guests(self):
+        return self.c_max_guests
+
+class Cleaning_Company(Supplier):
+    def __init__(self, s_name='', s_ID='', s_type=S_Type.C, s_address='', s_contact_details=''):
+        super().__init__(s_name, s_ID, s_type, s_address, s_contact_details)
+
+class Decorations_Company(Supplier):
+    def __init__(self, s_name='', s_ID='', s_type=S_Type.C, s_address='', s_contact_details=''):
+        super().__init__(s_name, s_ID, s_type, s_address, s_contact_details)
