@@ -56,8 +56,7 @@ class Event:
   def get_duration(self):
       return self.duration
 
-  def add_event(self, events, e_ID, theme, date, time, duration, v_address, clt_ID, guests, catering, cleaning,
-                decoration, entertainment, furniture):
+  def add_event(self, events, e_ID, theme, date, time, duration, v_address, clt_ID, guests, catering, cleaning,decoration, entertainment, furniture):
       # 1. Check if e_ID consists only of numbers
       if not e_ID.isdigit():
           raise ValueError("Event ID must contain only numbers.")
