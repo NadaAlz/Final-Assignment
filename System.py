@@ -694,13 +694,157 @@ class IntegratedSystemGUI:
             btn_save.grid(row=6, column=0, columnspan=2)
 
         def delete_venue():
-            pass
+            def delete():
+                try:
+                    v_ID = entry_id.get().strip()
+                    if Venue().delete_venue(self.venues, v_ID):
+                        messagebox.showinfo("Success", "Venue deleted successfully.")
+                    else:
+                        messagebox.showerror("Error", "Venue not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid venue ID.")
+
+                # Create a new window for deleting venue
+
+            delete_window = tk.Toplevel(self.master)
+            delete_window.title("Delete Venue")
+
+            # Label and entry field for Venue ID
+            lbl_id = tk.Label(delete_window, text="Venue ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_id = tk.Entry(delete_window)
+            entry_id.grid(row=0, column=1)
+
+            # Button to delete venue
+            btn_delete = tk.Button(delete_window, text="Delete", command=delete)
+            btn_delete.grid(row=1, column=0, columnspan=2)
 
         def modify_venue():
-            pass
+            modify_window = None  # Define modify_window as a global variable
+
+            def modify_details(venue, detail):
+                def save_changes():
+                    try:
+                        new_detail = entry_detail.get().strip()
+
+                        if detail == "Name":
+                            if not (new_detail.replace(" ", "").isalpha()):
+                                raise ValueError("Name must contain only letters and spaces.")
+                            venue.v_name = new_detail
+                        elif detail == "Address":
+                            if not (new_detail.replace(" ", "").isalnum()):
+                                raise ValueError("Address must contain only letters, numbers, and spaces.")
+                            venue.v_address = new_detail
+                        elif detail == "Contact":
+                            if not re.match(r"^\d{9}$", new_detail):
+                                raise ValueError("Contact must be a phone number with a length of 9 digits.")
+                            venue.v_contact = new_detail
+                        elif detail == "Min Guests":
+                            if not (new_detail.isdigit()):
+                                raise ValueError("Minimum guests must contain only numbers.")
+                            venue.v_min_guests = int(new_detail)
+                        elif detail == "Max Guests":
+                            if not (new_detail.isdigit()):
+                                raise ValueError("Maximum guests must contain only numbers.")
+                            if int(new_detail) <= venue.v_min_guests:
+                                raise ValueError("Maximum guests must be greater than minimum guests.")
+                            venue.v_max_guests = int(new_detail)
+
+                        messagebox.showinfo("Success", f"Venue {detail} modified successfully.")
+                        modify_window.destroy()
+                    except ValueError as e:
+                        messagebox.showerror("Error", str(e))
+
+                # Create a new window for modifying the selected detail
+                modify_window = tk.Toplevel()
+                modify_window.title(f"Modify {detail}")
+
+                # Label and entry field for the selected detail
+                lbl_detail = tk.Label(modify_window, text=f"{detail}:")
+                lbl_detail.grid(row=0, column=0, sticky="w")
+                entry_detail = tk.Entry(modify_window)
+                entry_detail.grid(row=0, column=1)
+
+                # Set default value in entry field based on the selected detail
+                if detail == "Name":
+                    entry_detail.insert(0, venue.v_name)
+                elif detail == "Address":
+                    entry_detail.insert(0, venue.v_address)
+                elif detail == "Contact":
+                    entry_detail.insert(0, venue.v_contact)
+                elif detail == "Min Guests":
+                    entry_detail.insert(0, venue.v_min_guests)
+                elif detail == "Max Guests":
+                    entry_detail.insert(0, venue.v_max_guests)
+
+                # Button to save the changes
+                btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
+                btn_save.grid(row=1, column=0, columnspan=2)
+
+            def verify_id():
+                try:
+                    # Function to verify Venue ID
+                    v_ID = entry_id.get()
+                    for venue in self.venues:
+                        if venue.v_ID == v_ID:
+                            # If ID is correct, show the modify menu
+                            nonlocal modify_window
+                            modify_window = tk.Toplevel()
+                            modify_window.title("Modify Venue Details")
+
+                            # Create a menu with different options for modifying venue details
+                            options = ["Name", "Address", "Contact", "Min Guests", "Max Guests"]
+                            for i, option in enumerate(options):
+                                btn_option = tk.Button(modify_window, text=option,
+                                                       command=lambda o=option: modify_details(venue, o))
+                                btn_option.grid(row=i, column=0, columnspan=2)
+
+                            return
+                    messagebox.showerror("Error", "Venue not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid venue ID.")
+
+            # Create a new window for verifying Venue ID
+            verify_window = tk.Toplevel(self.master)
+            verify_window.title("Verify Venue ID")
+
+            # Label and entry field for Venue ID
+            lbl_id = tk.Label(verify_window, text="Venue ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_id = tk.Entry(verify_window)
+            entry_id.grid(row=0, column=1)
+
+            # Button to verify Venue ID
+            btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
+            btn_verify.grid(row=1, column=0, columnspan=2)
 
         def display_venue():
-            pass
+            def display():
+                try:
+                    v_ID = entry_id.get().strip()
+                    venue = Venue().display_venue(self.venues, v_ID)
+                    if venue:
+                        details = f"Name: {venue.v_name}\nID: {venue.v_ID}\nAddress: {venue.v_address}\n" \
+                                  f"Contact: {venue.v_contact}\nMin Guests: {venue.v_min_guests}\nMax Guests: {venue.v_max_guests}"
+                        messagebox.showinfo("Venue Details", details)
+                    else:
+                        messagebox.showerror("Error", "Venue not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid venue ID.")
+
+            # Create a new window for displaying venue details
+            display_window = tk.Toplevel(self.master)
+            display_window.title("Display Venue Details")
+
+            # Label and entry field for Venue ID
+            lbl_id = tk.Label(display_window, text="Venue ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_id = tk.Entry(display_window)
+            entry_id.grid(row=0, column=1)
+
+            # Button to display venue details
+            btn_display = tk.Button(display_window, text="Display", command=display)
+            btn_display.grid(row=1, column=0, columnspan=2)
 
         venue_window = tk.Toplevel(self.master)
         venue_window.title("Manage Venues")
