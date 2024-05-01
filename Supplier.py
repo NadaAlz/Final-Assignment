@@ -47,7 +47,8 @@ class Supplier:
     def get_s_contact_details(self):
         return self.s_contact_details
 
-    def add_supplier(self, suppliers, s_name, s_ID, s_type, s_address, s_contact_details):
+    def add_supplier(self, suppliers, s_name, s_ID, s_type, s_address, s_contact_details, c_min_guests=None,
+                     c_max_guests=None):
         try:
             # Check if all details are provided
             if not (s_name and s_ID and s_address and s_contact_details):
@@ -73,6 +74,23 @@ class Supplier:
             # Check if contact details are a 9-digit number
             if not re.match(r"^\d{9}$", s_contact_details):
                 raise ValueError("Contact details must be a phone number with a length of 9 digits.")
+
+            if s_type == S_Type.C:  # Additional checks for Catering type
+                # Check if both min and max guests are provided
+                if c_min_guests is None or c_max_guests is None:
+                    raise ValueError("Please enter both minimum and maximum number of guests.")
+
+                # Convert guests to integers
+                c_min_guests = int(c_min_guests)
+                c_max_guests = int(c_max_guests)
+
+                # Check if min and max guests are numbers
+                if not (str(c_min_guests).isdigit() and str(c_max_guests).isdigit()):
+                    raise ValueError("Minimum and maximum number of guests must be numbers.")
+
+                # Check if max guests is greater than min guests
+                if c_max_guests <= c_min_guests:
+                    raise ValueError("Maximum number of guests must be greater than minimum number of guests.")
 
             # Add supplier with input details
             new_supplier = Supplier(s_name, s_ID, s_type, s_address, s_contact_details)
