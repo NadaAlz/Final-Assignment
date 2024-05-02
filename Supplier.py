@@ -156,7 +156,7 @@ class Catering_Company(Supplier):
     """Class to represent a catering company as a child of Supplier Class """
 
     #Constructor
-    def __init__(self, s_name='', s_ID='', s_type=S_Type.C, s_address='', s_contact_details='', menu=[], c_min_guests=0, c_max_guests=0):
+    def __init__(self, s_name='', s_ID=0, s_type=S_Type.C, s_address='', s_contact_details='', menu=[], c_min_guests=0, c_max_guests=0):
         super().__init__(s_name, s_ID, s_type, s_address, s_contact_details) #Inheritance
         self.menu = menu
         self.c_min_guests = c_min_guests
