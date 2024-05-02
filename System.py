@@ -30,6 +30,8 @@ class IntegratedSystemGUI:
         self.supplier = Supplier()
         self.events = []
         self.employees = []
+        self.save_data()
+        self.load_data()  # Load data when the application starts
         master.title("The Best Events Company System")
 
         # Create buttons for each entity
@@ -51,7 +53,87 @@ class IntegratedSystemGUI:
         self.btn_event = tk.Button(master, text="Event", command=self.manage_events)
         self.btn_event.pack()
 
+    def save_data(self):
+        self.save_events()
+        self.save_venues()
+        self.save_guests()
+        self.save_clients()
+        self.save_suppliers()
+        self.save_employees()
 
+    def load_data(self):
+        self.load_events()
+        self.load_venues()
+        self.load_guests()
+        self.load_clients()
+        self.load_suppliers()
+        self.load_employees()
+
+    def save_events(self):
+        with open('events.bin', 'wb') as f:
+            pickle.dump(self.events, f)
+
+    def load_events(self):
+        try:
+            with open('events.bin', 'rb') as f:
+                self.events = pickle.load(f)
+        except FileNotFoundError:
+            self.events = []
+
+    def save_venues(self):
+        with open('venues.bin', 'wb') as f:
+            pickle.dump(self.venues, f)
+
+    def load_venues(self):
+        try:
+            with open('venues.bin', 'rb') as f:
+                self.venues = pickle.load(f)
+        except FileNotFoundError:
+            self.venues = []
+
+    def save_guests(self):
+        with open('guests.bin', 'wb') as f:
+            pickle.dump(self.guests, f)
+
+    def load_guests(self):
+        try:
+            with open('guests.bin', 'rb') as f:
+                self.guests = pickle.load(f)
+        except FileNotFoundError:
+            self.guests = []
+
+    def save_clients(self):
+        with open('clients.bin', 'wb') as f:
+            pickle.dump(self.clients, f)
+
+    def load_clients(self):
+        try:
+            with open('clients.bin', 'rb') as f:
+                self.clients = pickle.load(f)
+        except FileNotFoundError:
+            self.clients = []
+
+    def save_suppliers(self):
+        with open('suppliers.bin', 'wb') as f:
+            pickle.dump(self.suppliers, f)
+
+    def load_suppliers(self):
+        try:
+            with open('suppliers.bin', 'rb') as f:
+                self.suppliers = pickle.load(f)
+        except FileNotFoundError:
+            self.suppliers = []
+
+    def save_employees(self):
+        with open('employees.bin', 'wb') as f:
+            pickle.dump(self.employees, f)
+
+    def load_employees(self):
+        try:
+            with open('employees.bin', 'rb') as f:
+                self.employees = pickle.load(f)
+        except FileNotFoundError:
+            self.employees = []
 
     def manage_events(self):
 
@@ -1693,19 +1775,13 @@ class IntegratedSystemGUI:
 def main():
     root = tk.Tk()
     app = IntegratedSystemGUI(root)
+    root.protocol("WM_DELETE_WINDOW", lambda: on_close(root, app))  # Intercept close event
     root.mainloop()
 
-    data_to_pickle = {
-        "clients": app.clients,
-        "guests": app.guests,
-        "venues": app.venues,
-        "suppliers": app.suppliers,
-        "events": app.events,
-        "employees": app.employees
-    }
+def on_close(root, app):
+    app.save_data()  # Save data before exiting
+    root.destroy()
 
-    with open('integrated_system_data.pkl', 'wb') as f:
-        pickle.dump(data_to_pickle, f)
 
 
 # Pickle the instance
