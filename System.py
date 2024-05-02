@@ -1,33 +1,36 @@
-from Employee import Manager
-from Employee import Employee
-from Employee import Job_Title
-from Client import Client
-from Guest import Guest
-from Venue import Venue
-from Supplier import Supplier
-from Supplier import S_Type
-from Event import Event
-from Event import Theme
+from Employee import Manager  # Import Manager class from Employee module
+from Employee import Employee  # Import Employee class from Employee module
+from Employee import Job_Title  # Import Job_Title enum from Employee module
+from Client import Client  # Import Client class from Client module
+from Guest import Guest  # Import Guest class from Guest module
+from Venue import Venue  # Import Venue class from Venue module
+from Supplier import Supplier  # Import Supplier class from Supplier module
+from Supplier import S_Type  # Import S_Type enum from Supplier module
+from Event import Event  # Import Event class from Event module
+from Event import Theme  # Import Theme enum from Event module
 
-import tkinter as tk
-from tkinter import messagebox, OptionMenu, Toplevel, Label, Entry, Button
-from tkinter import ttk
-import re
-import pickle
-
+import tkinter as tk  # Import tkinter module for GUI
+from tkinter import messagebox, OptionMenu, Toplevel, Label, Entry, Button  # Import specific components from tkinter
+from tkinter import ttk  # Import themed tkinter module
+import re  # Import regular expression module for pattern matching
+import pickle  # Import pickle module for data serialization
 
 class IntegratedSystemGUI:
+    """Class to represent the integrated system GUI"""
+
     def __init__(self, master):
-        self.master = master
-        self.clients = []
-        self.guest_management = Guest()
-        self.guests = []
-        self.venues = []
-        self.suppliers = []
-        self.supplier = Supplier()
-        self.events = []
-        self.employees = []
-        master.title("The Best Events Company System")
+        """Constructor method to initialize the GUI"""
+
+        self.master = master  # Set the master window
+        self.clients = []  # Initialize clients list
+        self.guest_management = Guest()  # Initialize guest management
+        self.guests = []  # Initialize guests list
+        self.venues = []  # Initialize venues list
+        self.suppliers = []  # Initialize suppliers list
+        self.supplier = Supplier()  # Initialize supplier
+        self.events = []  # Initialize events list
+        self.employees = []  # Initialize employees list
+        master.title("The Best Events Company System")  # Set the title of the GUI window
 
         # Create buttons for each entity
         self.btn_employee = tk.Button(master, text="Employee", command=self.manage_employees)
@@ -51,16 +54,15 @@ class IntegratedSystemGUI:
         btn_close = tk.Button(self.master, text="Close System", command=self.on_close)
         btn_close.pack()
 
-        self.load_data()
-
+        self.load_data()  # Load data from file when the system starts
 
     def on_close(self):
-        # Call the save_data method to save data before exiting
-       self.save_data()
-       # Close the application
-       self.master.destroy()
+        """Method to handle closing of the system"""
+        self.save_data()  # Save data before closing
+        self.master.destroy()  # Close the application
 
     def save_data(self):
+        """Method to save data to a file"""
         data = {
             'clients': self.clients,
             'guests': self.guests,
@@ -72,8 +74,8 @@ class IntegratedSystemGUI:
         with open('data.pkl', 'wb') as file:
             pickle.dump(data, file)
 
-    # Function to load data from a file using pickle
     def load_data(self):
+        """Method to load data from a file"""
         try:
             with open('data.pkl', 'rb') as file:
                 data = pickle.load(file)
@@ -87,14 +89,15 @@ class IntegratedSystemGUI:
             # Handle case where the file does not exist
             pass
 
-
     def manage_events(self):
-
+        """Method to manage events"""
 
         def add_event():
-            def save_event():
-                try:
+            """Function to add a new event"""
 
+            def save_event():
+                """Function to save the event details"""
+                try:
                     # Retrieve entered details
                     e_ID = entry_e_id.get()
                     theme = theme_var.get()
@@ -103,25 +106,25 @@ class IntegratedSystemGUI:
                     duration = entry_duration.get()
                     v_address = venue_var.get()
                     clt_ID = client_var.get()
-                    catering = catering_var.get()  # Get selected catering option
-                    cleaning = cleaning_var.get()  # Get selected cleaning option
-                    decoration = decoration_var.get()  # Get selected decoration option
-                    entertainment = entertainment_var.get()  # Get selected entertainment option
-                    furniture = furniture_var.get()  # Get selected furniture option
+                    catering = catering_var.get()
+                    cleaning = cleaning_var.get()
+                    decoration = decoration_var.get()
+                    entertainment = entertainment_var.get()
+                    furniture = furniture_var.get()
                     gst_ID = entry_gst_ID.get()
 
+                    # Check if any field is empty
                     if '' in [e_ID, theme, date, time, duration, v_address, clt_ID, catering,
                               cleaning, decoration, entertainment, furniture]:
                         raise ValueError("Please enter all details.")
 
-                        # Validate input formats
+                    # Validate input formats
                     if not re.match(r"^\d{1,2}-\d{1,2}-\d{4}$", date):
                         raise ValueError("Date must be in the form of DD-MM-YYYY.")
                     if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", time):
                         raise ValueError("Time must be in the form of HH:MM.")
                     if not duration.isdigit() or not (1 <= int(duration) <= 10):
                         raise ValueError("Duration must be a number between 1 and 10.")
-
                     if not re.match(r"^\d+(,\d+)*$", gst_ID):
                         raise ValueError("Guest IDs must be numbers separated by commas.")
 
@@ -131,12 +134,9 @@ class IntegratedSystemGUI:
                         if event.e_ID == e_ID:
                             raise ValueError(f"Event with ID {e_ID} already exists.")
 
-
-
-
-
                     # Add event with input details
-                    new_event = Event(e_ID, theme, date,time, duration, v_address, clt_ID, catering, cleaning, decoration, entertainment, furniture, gst_ID)
+                    new_event = Event(e_ID, theme, date, time, duration, v_address, clt_ID, catering, cleaning,
+                                      decoration, entertainment, furniture, gst_ID)
 
                     self.events.append(new_event)
 
@@ -191,9 +191,7 @@ class IntegratedSystemGUI:
             lbl_clt_ID.grid(row=6, column=0, sticky="w")
             client_var = tk.StringVar(add_window)
             client_var.set("")  # Default value
-            # Extract clt_ID from each client and store in a list
             clients_array = [client.clt_ID for client in self.clients]
-            # Create the dropdown menu with the list of clt_IDs
             client_dropdown = OptionMenu(add_window, client_var, *clients_array)
             client_dropdown.grid(row=6, column=1)
 
@@ -243,11 +241,6 @@ class IntegratedSystemGUI:
             entry_gst_ID = Entry(add_window)
             entry_gst_ID.grid(row=12, column=1)
 
-
-
-
-
-
             # Button to save the event details
             btn_save = Button(add_window, text="Save", command=save_event)
             btn_save.grid(row=13, column=0, columnspan=2)
@@ -264,7 +257,10 @@ class IntegratedSystemGUI:
                 error_tabs[error_type] = error_frame
 
         def delete_event():
+            """Function to delete an event"""
+
             def delete():
+                """Function to delete the selected event"""
                 try:
                     e_ID = entry_event_id.get()
                     for event in self.events:
@@ -292,11 +288,14 @@ class IntegratedSystemGUI:
             btn_delete_event.grid(row=1, column=0, columnspan=2)
 
         def modify_event():
-            # Define the function to modify an event
-            def modify_details(event, detail):
-                # Define the function to modify a specific detail of the event
-                def save_changes():
+            """Function to modify an event"""
 
+            # Define the function to modify an event's details
+            def modify_details(event, detail):
+                """Function to modify a specific detail of the event"""
+
+                def save_changes():
+                    """Function to save the changes made to the event"""
                     try:
                         if detail == "Event ID":
                             e_ID = entry_detail.get().strip()
@@ -329,8 +328,7 @@ class IntegratedSystemGUI:
                     except ValueError as ve:
                         messagebox.showerror("Error", str(ve))
 
-                    # Create a new window for modifying the selected detail
-
+                # Create a new window for modifying the selected detail
                 modify_window = tk.Toplevel()
                 modify_window.title(f"Modify {detail}")
 
@@ -356,9 +354,8 @@ class IntegratedSystemGUI:
                 btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
                 btn_save.grid(row=1, column=0, columnspan=2)
 
-
             def verify_id():
-                # Define the function to verify Event ID
+                """Function to verify Event ID"""
                 try:
                     # Retrieve the Event ID entered by the user
                     event_id = entry_event_id.get()
@@ -395,8 +392,10 @@ class IntegratedSystemGUI:
             btn_verify.grid(row=1, column=0, columnspan=2)
 
         def display_event():
-            # Define the function to display event details
+            """Function to display event details"""
+
             def display():
+                """Function to display the details of the selected event"""
                 try:
                     # Retrieve the Event ID entered by the user
                     event_id = entry_event_id.get()
@@ -440,8 +439,10 @@ class IntegratedSystemGUI:
             display_window.entry_event_id = entry_event_id
 
         def generate_invoice():
-            # Define the function to generate an invoice for the event
+            """Function to generate an invoice for the event"""
+
             def display_invoice():
+                """Function to display the invoice for the selected event"""
                 try:
                     # Retrieve the Event ID entered by the user
                     event_id = entry_event_id.get()
@@ -498,36 +499,29 @@ class IntegratedSystemGUI:
             # It's important to keep a reference to entry_event_id to avoid garbage collection
             invoice_window.entry_event_id = entry_event_id
 
+        # Create a new window for managing events
         event_window = tk.Toplevel(self.master)
         event_window.title("Manage Events")
 
-        btn_add = tk.Button(event_window, text="Add Event", command=add_event)
-        if not self.clients:
-            messagebox.showerror("Error", "Please create a client first.")
-            return
-        if not self.suppliers:
-            messagebox.showerror("Error", "Please create a supplier first.")
-            return
-        if not self.venues:
-            messagebox.showerror("Error", "Please create a venue first.")
-            return
-        if not self.guests:
-            messagebox.showerror("Error", "Please create a guest first.")
-            return
-        btn_add.pack()
+        # Button to add a new event
+        btn_add_event = tk.Button(event_window, text="Add Event", command=add_event)
+        btn_add_event.grid(row=0, column=0, pady=10)
 
-        btn_delete = tk.Button(event_window, text="Delete Event", command=delete_event)
-        btn_delete.pack()
+        # Button to delete an event
+        btn_delete_event = tk.Button(event_window, text="Delete Event", command=delete_event)
+        btn_delete_event.grid(row=1, column=0, pady=10)
 
-        btn_modify = tk.Button(event_window, text="Modify Event", command=modify_event)
-        btn_modify.pack()
+        # Button to modify an event
+        btn_modify_event = tk.Button(event_window, text="Modify Event", command=modify_event)
+        btn_modify_event.grid(row=2, column=0, pady=10)
 
-        btn_display = tk.Button(event_window, text="Display Event", command=display_event)
-        btn_display.pack()
+        # Button to display event details
+        btn_display_event = tk.Button(event_window, text="Display Event", command=display_event)
+        btn_display_event.grid(row=3, column=0, pady=10)
 
-        btn_display = tk.Button(event_window, text="Display Invoice", command=generate_invoice)
-        btn_display.pack()
-
+        # Button to generate invoice for an event
+        btn_generate_invoice = tk.Button(event_window, text="Generate Invoice", command=generate_invoice)
+        btn_generate_invoice.grid(row=4, column=0, pady=10)
 
     def manage_employees(self):
         # Implement functionality to manage employees
@@ -868,10 +862,9 @@ class IntegratedSystemGUI:
         btn_display = tk.Button(employee_window, text="Assign Manager", command=assign_manager)
         btn_display.pack()
 
-
-
     def manage_clients(self):
         # Implement functionality to manage clients
+
         def add_client():
             def save_client():
                 try:
@@ -883,7 +876,8 @@ class IntegratedSystemGUI:
                     budget = entry_budget.get()
 
                     # Add client with input details
-                    new_client = Client().add_client(self.clients, clt_name, clt_ID, clt_address, clt_contact_details,budget)
+                    new_client = Client().add_client(self.clients, clt_name, clt_ID, clt_address, clt_contact_details,
+                                                     budget)
 
                     # Close the add window
                     add_window.destroy()
@@ -1086,10 +1080,9 @@ class IntegratedSystemGUI:
         btn_display = tk.Button(client_window, text="Display Client", command=display_client)
         btn_display.pack()
 
-
-
     def manage_venues(self):
         # Implement functionality to manage venues
+
         def add_venue():
             def save_venue():
                 try:
@@ -1161,8 +1154,7 @@ class IntegratedSystemGUI:
                 except ValueError:
                     messagebox.showerror("Error", "Please enter a valid venue ID.")
 
-                # Create a new window for deleting venue
-
+            # Create a new window for deleting venue
             delete_window = tk.Toplevel(self.master)
             delete_window.title("Delete Venue")
 
@@ -1318,12 +1310,12 @@ class IntegratedSystemGUI:
         btn_display = tk.Button(venue_window, text="Display Venue", command=display_venue)
         btn_display.pack()
 
-
-
     def manage_suppliers(self):
         # Implement functionality to manage suppliers
+
         def add_supplier():
             def save_supplier():
+                # Retrieve supplier details from entry fields
                 s_name = entry_name.get().strip()
                 s_ID = entry_id.get().strip()
                 s_address = entry_address.get().strip()
@@ -1333,16 +1325,17 @@ class IntegratedSystemGUI:
                 c_min_guests = None  # Initialize with default value
                 c_max_guests = None  # Initialize with default value
 
-                if s_type == S_Type.C:  # Check if the selected type is Catering
-                    c_min_guests = entry_min_guests.get().strip()  # Get min guests
-                    c_max_guests = entry_max_guests.get().strip()  # Get max guests
+                # If the supplier type is Catering, get additional fields
+                if s_type == S_Type.C:
+                    c_min_guests = entry_min_guests.get().strip()
+                    c_max_guests = entry_max_guests.get().strip()
 
-                    # Check if min and max guests are provided
+                    # Check if both minimum and maximum guests are provided
                     if not (c_min_guests and c_max_guests):
                         messagebox.showerror("Error", "Please enter both minimum and maximum number of guests.")
                         return
 
-                    # Check if min and max guests are numbers
+                    # Check if minimum and maximum guests are numbers
                     if not (c_min_guests.isdigit() and c_max_guests.isdigit()):
                         messagebox.showerror("Error", "Minimum and maximum number of guests must be numbers.")
                         return
@@ -1357,17 +1350,21 @@ class IntegratedSystemGUI:
                                              "Maximum number of guests must be greater than minimum number of guests.")
                         return
 
+                # Attempt to add the supplier
                 success, message = self.supplier.add_supplier(self.suppliers, s_name, s_ID, s_type, s_address,
                                                               s_contact_details, c_min_guests, c_max_guests)
+                # Show success or error message
                 if success:
                     add_window.destroy()
                     messagebox.showinfo("Success", message)
                 else:
                     messagebox.showerror("Error", message)
 
+            # Create a new window for adding a supplier
             add_window = tk.Toplevel(self.master)
             add_window.title("Add New Supplier")
 
+            # Define labels and entry fields for supplier details
             lbl_name = tk.Label(add_window, text="Name:")
             lbl_name.grid(row=0, column=0, sticky="w")
             entry_name = tk.Entry(add_window)
@@ -1397,29 +1394,30 @@ class IntegratedSystemGUI:
             dropdown_type.grid(row=4, column=1)
 
             # Additional fields for Catering
-            lbl_min_guests = tk.Label(add_window, text="Minimum Guests:")  # Label for minimum guests
-            lbl_max_guests = tk.Label(add_window, text="Maximum Guests:")  # Label for maximum guests
-            entry_min_guests = tk.Entry(add_window)  # Entry field for minimum guests
-            entry_max_guests = tk.Entry(add_window)  # Entry field for maximum guests
+            lbl_min_guests = tk.Label(add_window, text="Minimum Guests:")
+            lbl_max_guests = tk.Label(add_window, text="Maximum Guests:")
+            entry_min_guests = tk.Entry(add_window)
+            entry_max_guests = tk.Entry(add_window)
 
             # Function to show/hide additional fields based on selected type
             def show_hide_fields(*args):
-                if entry_type_var.get() == "Catering":  # If Catering is selected
+                if entry_type_var.get() == "Catering":
                     lbl_min_guests.grid(row=5, column=0, sticky="w")
                     lbl_max_guests.grid(row=6, column=0, sticky="w")
                     entry_min_guests.grid(row=5, column=1)
                     entry_max_guests.grid(row=6, column=1)
                 else:
-                    lbl_min_guests.grid_forget()  # Hide the labels and entry fields
+                    lbl_min_guests.grid_forget()
                     lbl_max_guests.grid_forget()
                     entry_min_guests.grid_forget()
                     entry_max_guests.grid_forget()
 
-            entry_type_var.trace("w", show_hide_fields)  # Call the function when dropdown selection changes
+            entry_type_var.trace("w", show_hide_fields)
 
             btn_save = tk.Button(add_window, text="Save", command=save_supplier)
             btn_save.grid(row=7, column=0, columnspan=2)
 
+        # Define function to delete a supplier
         def delete_supplier():
             def delete():
                 s_ID = entry_id.get().strip()
@@ -1441,6 +1439,7 @@ class IntegratedSystemGUI:
             btn_delete = tk.Button(delete_window, text="Delete", command=delete)
             btn_delete.grid(row=1, column=0, columnspan=2)
 
+        # Define function to modify a supplier
         def modify_supplier():
             def modify_details(supplier, detail):
                 def save_changes():
@@ -1497,6 +1496,7 @@ class IntegratedSystemGUI:
             btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
             btn_verify.grid(row=1, column=0, columnspan=2)
 
+        # Define function to display supplier details
         def display_supplier():
             def display():
                 s_ID = entry_id.get().strip()
@@ -1517,9 +1517,11 @@ class IntegratedSystemGUI:
             btn_display = tk.Button(display_window, text="Display", command=display)
             btn_display.grid(row=1, column=0, columnspan=2)
 
+        # Create a window to manage suppliers
         supplier_window = tk.Toplevel(self.master)
         supplier_window.title("Manage Suppliers")
 
+        # Add buttons to perform various actions
         btn_add = tk.Button(supplier_window, text="Add Supplier", command=add_supplier)
         btn_add.pack()
 
@@ -1532,29 +1534,31 @@ class IntegratedSystemGUI:
         btn_display = tk.Button(supplier_window, text="Display Supplier", command=display_supplier)
         btn_display.pack()
 
-
-
     def manage_guests(self):
-        # Implement functionality to manage guests
+        # Function to add a new guest
         def add_guest():
             def save_guest():
                 try:
+                    # Retrieve guest details from entry fields
                     gst_name = entry_name.get()
                     gst_ID = entry_id.get()
                     gst_address = entry_address.get()
                     gst_contact_details = entry_contact_details.get()
 
+                    # Add the guest
                     new_guest = self.guest_management.add_guest(self.guests, gst_name, gst_ID, gst_address,
                                                                 gst_contact_details)
 
-                    add_window.destroy()
+                    add_window.destroy()  # Close the window
                     messagebox.showinfo("Success", "Guest added successfully.")
                 except ValueError as e:
-                    messagebox.showerror("Error", str(e))
+                    messagebox.showerror("Error", str(e))  # Display error message
 
+            # Create a new window for adding a guest
             add_window = tk.Toplevel(self.master)
             add_window.title("Add New Guest")
 
+            # Label and entry fields for guest details
             lbl_name = tk.Label(add_window, text="Name:")
             lbl_name.grid(row=0, column=0, sticky="w")
             entry_name = tk.Entry(add_window)
@@ -1578,6 +1582,7 @@ class IntegratedSystemGUI:
             btn_save = tk.Button(add_window, text="Save", command=save_guest)
             btn_save.grid(row=4, column=0, columnspan=2)
 
+        # Function to delete a guest
         def delete_guest():
             def delete():
                 try:
@@ -1589,9 +1594,11 @@ class IntegratedSystemGUI:
                 except ValueError:
                     messagebox.showerror("Error", "Please enter a valid guest ID.")
 
+            # Create a new window for deleting a guest
             delete_window = tk.Toplevel(self.master)
             delete_window.title("Delete Guest")
 
+            # Label and entry field for guest ID
             lbl_id = tk.Label(delete_window, text="Guest ID:")
             lbl_id.grid(row=0, column=0, sticky="w")
             entry_id = tk.Entry(delete_window)
@@ -1600,14 +1607,15 @@ class IntegratedSystemGUI:
             btn_delete = tk.Button(delete_window, text="Delete", command=delete)
             btn_delete.grid(row=1, column=0, columnspan=2)
 
+        # Function to modify a guest
         def modify_guest():
-            modify_window = None  # Define modify_window as a global variable
-
+            # Function to modify guest details
             def modify_details(guest, detail):
                 def save_changes():
                     try:
                         new_detail = entry_detail.get().strip()
 
+                        # Update the selected detail
                         if detail == "Name":
                             if not (new_detail.replace(" ", "").isalpha()):
                                 raise ValueError("Name must contain only letters and spaces.")
@@ -1622,9 +1630,9 @@ class IntegratedSystemGUI:
                             guest.gst_contact_details = new_detail
 
                         messagebox.showinfo("Success", f"Guest {detail} modified successfully.")
-                        modify_window.destroy()
+                        modify_window.destroy()  # Close the window
                     except ValueError as e:
-                        messagebox.showerror("Error", str(e))
+                        messagebox.showerror("Error", str(e))  # Display error message
 
                 # Create a new window for modifying the selected detail
                 modify_window = tk.Toplevel()
@@ -1648,14 +1656,13 @@ class IntegratedSystemGUI:
                 btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
                 btn_save.grid(row=1, column=0, columnspan=2)
 
+            # Function to verify Guest ID
             def verify_id():
                 try:
-                    # Function to verify Guest ID
                     gst_ID = entry_id.get()
                     for guest in self.guests:
                         if guest.gst_ID == gst_ID:
                             # If ID is correct, show the modify menu
-                            nonlocal modify_window
                             modify_window = tk.Toplevel()
                             modify_window.title("Modify Guest Details")
 
@@ -1685,12 +1692,14 @@ class IntegratedSystemGUI:
             btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
             btn_verify.grid(row=1, column=0, columnspan=2)
 
+        # Function to display guest details
         def display_guest():
             def display():
                 try:
                     gst_ID = entry_id.get().strip()
                     guest = self.guest_management.display_guest(self.guests, gst_ID)
                     if guest:
+                        # Display guest details
                         details = f"Name: {guest.gst_name}\nID: {guest.gst_ID}\nAddress: {guest.gst_address}\n" \
                                   f"Contact Details: {guest.gst_contact_details}"
                         messagebox.showinfo("Guest Details", details)
@@ -1699,20 +1708,25 @@ class IntegratedSystemGUI:
                 except ValueError:
                     messagebox.showerror("Error", "Please enter a valid guest ID.")
 
+            # Create a new window for displaying guest details
             display_window = tk.Toplevel(self.master)
             display_window.title("Display Guest Details")
 
+            # Label and entry field for Guest ID
             lbl_id = tk.Label(display_window, text="Guest ID:")
             lbl_id.grid(row=0, column=0, sticky="w")
             entry_id = tk.Entry(display_window)
             entry_id.grid(row=0, column=1)
 
+            # Button to display guest details
             btn_display = tk.Button(display_window, text="Display", command=display)
             btn_display.grid(row=1, column=0, columnspan=2)
 
+        # Create a window to manage guests
         guest_window = tk.Toplevel(self.master)
         guest_window.title("Manage Guests")
 
+        # Add buttons to perform various actions
         btn_add = tk.Button(guest_window, text="Add Guest", command=add_guest)
         btn_add.pack()
 
@@ -1724,6 +1738,7 @@ class IntegratedSystemGUI:
 
         btn_display = tk.Button(guest_window, text="Display Guest", command=display_guest)
         btn_display.pack()
+
 
 def main():
     root = tk.Tk()
