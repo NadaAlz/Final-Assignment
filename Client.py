@@ -1,43 +1,43 @@
-import re
+import re  # Import regular expression module for pattern matching
 
 class Client:
     """Class to represent a client"""
     def __init__(self, clt_name='', clt_ID=0, clt_address='', clt_contact_details='', budget=0.0):
-        self.clt_name = clt_name
-        self.clt_ID = clt_ID
-        self.clt_address = clt_address
-        self.clt_contact_details = clt_contact_details
-        self.budget = budget
+        self.clt_name = clt_name  # Initialize client's name
+        self.clt_ID = clt_ID  # Initialize client's ID
+        self.clt_address = clt_address  # Initialize client's address
+        self.clt_contact_details = clt_contact_details  # Initialize client's contact details
+        self.budget = budget  # Initialize client's budget
 
     def set_clt_name(self, clt_name):
-        self.clt_name = clt_name
+        self.clt_name = clt_name  # Set client's name
 
     def set_clt_ID(self, clt_ID):
-        self.clt_ID = clt_ID
+        self.clt_ID = clt_ID  # Set client's ID
 
     def set_clt_address(self, clt_address):
-        self.clt_address = clt_address
+        self.clt_address = clt_address  # Set client's address
 
     def set_clt_contact_details(self, clt_contact_details):
-        self.clt_contact_details = clt_contact_details
+        self.clt_contact_details = clt_contact_details  # Set client's contact details
 
     def set_budget(self, budget):
-        self.budget = budget
+        self.budget = budget  # Set client's budget
 
     def get_clt_name(self):
-        return self.clt_name
+        return self.clt_name  # Get client's name
 
     def get_clt_ID(self):
-        return self.clt_ID
+        return self.clt_ID  # Get client's ID
 
     def get_clt_address(self):
-        return self.clt_address
+        return self.clt_address  # Get client's address
 
     def get_clt_contact_details(self):
-        return self.clt_contact_details
+        return self.clt_contact_details  # Get client's contact details
 
     def get_budget(self):
-        return self.budget
+        return self.budget  # Get client's budget
 
     def add_client(self, clients, clt_name, clt_ID, clt_address, clt_contact_details, budget):
         # Validation
@@ -57,14 +57,14 @@ class Client:
             if client.clt_ID == clt_ID:
                 raise ValueError("Client with the same ID already exists.")
 
-        new_client = Client(clt_name, clt_ID, clt_address, clt_contact_details, float(budget))
-        clients.append(new_client)
+        new_client = Client(clt_name, clt_ID, clt_address, clt_contact_details, float(budget))  # Create a new client
+        clients.append(new_client)  # Add the new client to the list of clients
         return new_client
 
     def delete_client(self, clients, clt_ID):
         for client in clients:
             if client.clt_ID == clt_ID:
-                clients.remove(client)
+                clients.remove(client)  # Delete the client
                 return True
         return False
 
@@ -72,20 +72,20 @@ class Client:
         for client in clients:
             if client.clt_ID == clt_ID:
                 if clt_name is not None:
-                    client.clt_name = clt_name
+                    client.clt_name = clt_name  # Modify client's name if provided
                 if clt_address is not None:
-                    client.clt_address = clt_address
+                    client.clt_address = clt_address  # Modify client's address if provided
                 if clt_contact_details is not None:
-                    client.clt_contact_details = clt_contact_details
+                    client.clt_contact_details = clt_contact_details  # Modify client's contact details if provided
                 if budget is not None:
-                    client.budget = float(budget)
+                    client.budget = float(budget)  # Modify client's budget if provided
                 return True
         return False
 
     def display_client(self, clients, clt_ID):
         for client in clients:
             if client.clt_ID == clt_ID:
-                return client
-        return None
+                return client  # Return the client with the provided ID
+        return None  # Return None if client not found
 
 
