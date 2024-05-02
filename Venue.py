@@ -4,7 +4,7 @@ import re
 class Venue:
     """Class to represent a venue"""
 
-    def __init__(self, v_name='', v_ID='', v_address='', v_contact='', v_min_guests=0, v_max_guests=0):
+    def __init__(self, v_name='', v_ID=0, v_address='', v_contact='', v_min_guests=0, v_max_guests=0):
         self.v_name = v_name
         self.v_ID = v_ID
         self.v_address = v_address
