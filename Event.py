@@ -49,24 +49,8 @@ class Event:
     def get_theme(self):
         return self.theme  # Get Event theme
 
-    def add_guest(self, guest):
-        self.guests.append(guest)  # Add guest to the event
-
-    def add_event(self, events, e_ID, theme, clt_ID):
-        # Validation
-        if not (e_ID.isdigit()):
-            raise ValueError("Event ID must contain only numbers.")
-        if not (clt_ID.isdigit()):
-            raise ValueError("Client ID must contain only numbers.")
-
-        # Check if the ID already exists
-        for event in events:
-            if event.e_ID == e_ID:
-                raise ValueError("Event with the same ID already exists.")
-
-        new_event = Event(e_ID, theme, clt_ID)  # Create a new event
-        events.append(new_event)  # Add the new event to the list of events
-        return new_event
+    def add_event(self):
+        pass
 
    #Function to delete an event by providing the ID
     def delete_event(self, events, e_ID):
@@ -77,15 +61,8 @@ class Event:
         return False
 
     # Function to modify an event by providing the ID
-    def modify_event(self, events, e_ID, theme=None, client=None):
-        for event in events:
-            if event.e_ID == e_ID:
-                if theme is not None:
-                    event.theme = theme  # Modify event theme if provided
-                if client is not None:
-                    event.client = client  # Modify client if provided
-                    return True
-        return False
+    def modify_event(self):
+        pass
 
     # Function to display an event by providing the ID
     def display_event(self, events, e_ID):
