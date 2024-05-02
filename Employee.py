@@ -11,7 +11,7 @@ class Job_Title(Enum):
 class Employee:
     """Class to represent an employee"""
 
-    def __init__(self, emp_name='', emp_ID='', department='', job_title=None, age=0, dob="", passport=""):
+    def __init__(self, emp_name='', emp_ID=0, department='', job_title=None, age=0, dob="", passport=""):
         self.emp_name = emp_name
         self.emp_ID = emp_ID
         self.department = department
@@ -46,7 +46,7 @@ class Employee:
 
 
 class Manager(Employee):
-    def __init__(self, emp_name='', emp_ID='', department='', job_title=None, age=0, dob="", passport=""):
+    def __init__(self, emp_name='', emp_ID=0, department='', job_title=None, age=0, dob="", passport=""):
         super().__init__(emp_name, emp_ID, department, job_title, age, dob, passport)
         self.employees = []
 
