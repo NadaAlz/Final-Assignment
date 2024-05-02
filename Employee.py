@@ -48,8 +48,8 @@ class Employee:
 class Manager(Employee):
     def __init__(self, emp_name='', emp_ID=0, department='', job_title=None, age=0, dob="", passport=""):
         super().__init__(emp_name, emp_ID, department, job_title, age, dob, passport)
-        self.employees = []
+        self.m_employees = []
 
     def add_employee(self, employee):
-        self.employees.append(employee)
+        self.m_employees.append(employee)
 
