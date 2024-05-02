@@ -15,11 +15,14 @@ from tkinter import ttk  # Import themed tkinter module
 import re  # Import regular expression module for pattern matching
 import pickle  # Import pickle module for data serialization
 
-class IntegratedSystemGUI:
-    """Class to represent the integrated system GUI"""
+class TBEC_GUI:
+    """Class to represent The Best Event Company system GUI"""
 
     def __init__(self, master):
         """Constructor method to initialize the GUI"""
+
+        #This system has an association relationship with all other classes, because it takes and saves different objects(employees, clients, guests, suppliers, venues, events)
+        #The association is shown in the lists that are created below
 
         self.master = master  # Set the master window
         self.clients = []  # Initialize clients list
@@ -1742,7 +1745,7 @@ class IntegratedSystemGUI:
 
 def main():
     root = tk.Tk()
-    app = IntegratedSystemGUI(root)
+    app = TBEC_GUI(root)
     root.mainloop()
 
 if __name__ == "__main__":
