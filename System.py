@@ -13,7 +13,9 @@ import tkinter as tk
 from tkinter import messagebox, OptionMenu, Toplevel, Label, Entry, Button, END
 from tkinter import MULTIPLE
 from tkinter import Listbox
+from tkinter import ttk
 import re
+from tkinter import Checkbutton, IntVar
 
 
 class IntegratedSystemGUI:
@@ -48,22 +50,15 @@ class IntegratedSystemGUI:
         self.btn_event = tk.Button(master, text="Event", command=self.manage_events)
         self.btn_event.pack()
 
+
+
     def manage_events(self):
+
+
         def add_event():
             def save_event():
-                if not self.clients:
-                    messagebox.showerror("Error", "Please create a client first.")
-                    return
-                if not self.suppliers:
-                    messagebox.showerror("Error", "Please create a supplier first.")
-                    return
-                if not self.venues:
-                    messagebox.showerror("Error", "Please create a venue first.")
-                    return
-                if not self.guests:
-                    messagebox.showerror("Error", "Please create a guest first.")
-                    return
                 try:
+
                     # Retrieve entered details
                     e_ID = entry_e_id.get()
                     theme = theme_var.get()
@@ -72,18 +67,41 @@ class IntegratedSystemGUI:
                     duration = entry_duration.get()
                     v_address = venue_var.get()
                     clt_ID = client_var.get()
-                    g_ID = []
-                    for index in guest_listbox.curselection():
-                        g_ID.append(guest_listbox.get(index))
                     catering = catering_var.get()  # Get selected catering option
                     cleaning = cleaning_var.get()  # Get selected cleaning option
                     decoration = decoration_var.get()  # Get selected decoration option
                     entertainment = entertainment_var.get()  # Get selected entertainment option
                     furniture = furniture_var.get()  # Get selected furniture option
+                    gst_ID = entry_gst_ID.get()
+
+                    if '' in [e_ID, theme, date, time, duration, v_address, clt_ID, catering,
+                              cleaning, decoration, entertainment, furniture]:
+                        raise ValueError("Please enter all details.")
+
+                        # Validate input formats
+                    if not re.match(r"^\d{1,2}-\d{1,2}-\d{4}$", date):
+                        raise ValueError("Date must be in the form of DD-MM-YYYY.")
+                    if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", time):
+                        raise ValueError("Time must be in the form of HH:MM.")
+                    if not duration.isdigit() or not (1 <= int(duration) <= 10):
+                        raise ValueError("Duration must be a number between 1 and 10.")
+
+                    if not re.match(r"^\d+(,\d+)*$", gst_ID):
+                        raise ValueError("Guest IDs must be numbers separated by commas.")
+
+                    gst_ID = gst_ID.split(',')  # Convert string to list of guest IDs
+
+                    for event in self.events:
+                        if event.e_ID == e_ID:
+                            raise ValueError(f"Event with ID {e_ID} already exists.")
+
+
+
+
 
                     # Add event with input details
-                    new_event = Event(e_ID, Theme(theme), date, time, duration, v_address, clt_ID, g_ID, catering,
-                                      cleaning, decoration, entertainment, furniture)
+                    new_event = Event(e_ID, theme, date,time, duration, v_address, clt_ID, catering, cleaning, decoration, entertainment, furniture, gst_ID)
+
                     self.events.append(new_event)
 
                     # Close the add window
@@ -92,16 +110,15 @@ class IntegratedSystemGUI:
                 except ValueError as e:
                     messagebox.showerror("Error", str(e))
 
-                # Create a new window for adding event details
+            # Create a new window for adding event details
             add_window = Toplevel(self.master)
             add_window.title("Add New Event")
 
-                # Define labels and entry fields for event details
+            # Define labels and entry fields for event details
             lbl_e_id = Label(add_window, text="Event ID:")
             lbl_e_id.grid(row=0, column=0, sticky="w")
             entry_e_id = Entry(add_window)
             entry_e_id.grid(row=0, column=1)
-
 
             lbl_theme = Label(add_window, text="Theme:")
             lbl_theme.grid(row=1, column=0, sticky="w")
@@ -134,34 +151,31 @@ class IntegratedSystemGUI:
             venue_dropdown = OptionMenu(add_window, venue_var, *venues_array)
             venue_dropdown.grid(row=5, column=1)
 
-
             lbl_clt_ID = Label(add_window, text="Client ID:")
             lbl_clt_ID.grid(row=6, column=0, sticky="w")
             client_var = tk.StringVar(add_window)
             client_var.set("")  # Default value
             # Extract clt_ID from each client and store in a list
             clients_array = [client.clt_ID for client in self.clients]
-            # Cre the dropdown menu with the list of clt_IDs
+            # Create the dropdown menu with the list of clt_IDs
             client_dropdown = OptionMenu(add_window, client_var, *clients_array)
             client_dropdown.grid(row=6, column=1)
 
-
-                # Create menus for selecting from available options
+            # Create menus for selecting from available options
             lbl_catering = Label(add_window, text="Catering:")
             lbl_catering.grid(row=7, column=0, sticky="w")
             catering_var = tk.StringVar(add_window)
             catering_var.set("")  # Default value
             catering_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.C]
-            catering_dropdown = OptionMenu(add_window, catering_var, *catering_array)  # Replace options with available catering options
+            catering_dropdown = OptionMenu(add_window, catering_var, *catering_array)
             catering_dropdown.grid(row=7, column=1)
-
 
             lbl_cleaning = Label(add_window, text="Cleaning:")
             lbl_cleaning.grid(row=8, column=0, sticky="w")
             cleaning_var = tk.StringVar(add_window)
             cleaning_var.set("")  # Default value
             cleaning_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.CL]
-            cleaning_menu = OptionMenu(add_window, cleaning_var, *cleaning_array)  # Replace options with available cleaning options
+            cleaning_menu = OptionMenu(add_window, cleaning_var, *cleaning_array)
             cleaning_menu.grid(row=8, column=1)
 
             lbl_decoration = Label(add_window, text="Decoration:")
@@ -169,7 +183,7 @@ class IntegratedSystemGUI:
             decoration_var = tk.StringVar(add_window)
             decoration_var.set("")  # Default value
             decoration_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.D]
-            decoration_menu = OptionMenu(add_window, decoration_var, *decoration_array)  # Replace options with available decoration options
+            decoration_menu = OptionMenu(add_window, decoration_var, *decoration_array)
             decoration_menu.grid(row=9, column=1)
 
             lbl_entertainment = Label(add_window, text="Entertainment:")
@@ -177,7 +191,7 @@ class IntegratedSystemGUI:
             entertainment_var = tk.StringVar(add_window)
             entertainment_var.set("")  # Default value
             entertainment_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.E]
-            entertainment_menu = OptionMenu(add_window, entertainment_var, *entertainment_array)  # Replace options with available entertainment options
+            entertainment_menu = OptionMenu(add_window, entertainment_var, *entertainment_array)
             entertainment_menu.grid(row=10, column=1)
 
             lbl_furniture = Label(add_window, text="Furniture:")
@@ -185,25 +199,50 @@ class IntegratedSystemGUI:
             furniture_var = tk.StringVar(add_window)
             furniture_var.set("")  # Default value
             furniture_array = [supplier.s_name for supplier in self.suppliers if supplier.s_type == S_Type.F]
-            furniture_menu = OptionMenu(add_window, furniture_var, *furniture_array)  # Replace options with available furniture options
+            furniture_menu = OptionMenu(add_window, furniture_var, *furniture_array)
             furniture_menu.grid(row=11, column=1)
 
+            lbl_gst_ID = Label(add_window, text="Guest IDs (Seperated by commas):")
+            lbl_gst_ID.grid(row=12, column=0, sticky="w")
+            entry_gst_ID = Entry(add_window)
+            entry_gst_ID.grid(row=12, column=1)
 
-            lbl_guest_ID = Label(add_window, text="Guest IDs:")
-            lbl_guest_ID.grid(row=12, column=0, sticky="w")
-            guest_listbox = Listbox(add_window, selectmode=MULTIPLE)
-            guest_listbox.grid(row=12, column=1)
-            # Populate the listbox with guest IDs
-            for guest in self.guests:
-                guest_listbox.insert(END, guest.guest_ID)
+
+
+
+
 
             # Button to save the event details
             btn_save = Button(add_window, text="Save", command=save_event)
-            btn_save.grid(row=12, column=0, columnspan=2)
+            btn_save.grid(row=13, column=0, columnspan=2)
+
+            # Create a notebook for error messages
+            error_notebook = ttk.Notebook(add_window)
+            error_notebook.grid(row=14, columnspan=2, sticky="ew")
+            error_tabs = {}
+
+            # Create tabs for each type of missing detail
+            for error_type in ['Client', 'Supplier', 'Venue', 'Guest']:
+                error_frame = ttk.Frame(error_notebook)
+                error_notebook.add(error_frame, text=error_type)
+                error_tabs[error_type] = error_frame
+
         event_window = tk.Toplevel(self.master)
         event_window.title("Manage Events")
 
         btn_add = tk.Button(event_window, text="Add Event", command=add_event)
+        if not self.clients:
+            messagebox.showerror("Error", "Please create a client first.")
+            return
+        if not self.suppliers:
+            messagebox.showerror("Error", "Please create a supplier first.")
+            return
+        if not self.venues:
+            messagebox.showerror("Error", "Please create a venue first.")
+            return
+        if not self.guests:
+            messagebox.showerror("Error", "Please create a guest first.")
+            return
         btn_add.pack()
 
         #btn_delete = tk.Button(event_window, text="Delete Event", command=delete_event)
