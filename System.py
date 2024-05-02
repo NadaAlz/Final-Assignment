@@ -10,12 +10,13 @@ from Event import Event
 from Event import Theme
 
 import tkinter as tk
-from tkinter import messagebox, OptionMenu, Toplevel, Label, Entry, Button, END
-from tkinter import MULTIPLE
-from tkinter import Listbox
+from tkinter import messagebox, OptionMenu, Toplevel, Label, Entry, Button
 from tkinter import ttk
 import re
-from tkinter import Checkbutton, IntVar
+
+
+import pickle
+
 
 
 class IntegratedSystemGUI:
@@ -28,7 +29,7 @@ class IntegratedSystemGUI:
         self.suppliers = []
         self.supplier = Supplier()
         self.events = []
-       # self.event = Event()
+        self.employees = []
         master.title("The Best Events Company System")
 
         # Create buttons for each entity
@@ -227,6 +228,241 @@ class IntegratedSystemGUI:
                 error_notebook.add(error_frame, text=error_type)
                 error_tabs[error_type] = error_frame
 
+        def delete_event():
+            def delete():
+                try:
+                    e_ID = entry_event_id.get()
+                    for event in self.events:
+                        if event.e_ID == e_ID:
+                            self.events.remove(event)
+                            messagebox.showinfo("Success", "Event deleted successfully.")
+                            delete_window.destroy()
+                            return
+                    messagebox.showerror("Error", "Event not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid event ID.")
+
+            # Create a new window for deleting event
+            delete_window = tk.Toplevel(self.master)
+            delete_window.title("Delete Event")
+
+            # Label and entry field for Event ID
+            lbl_event_id = tk.Label(delete_window, text="Event ID:")
+            lbl_event_id.grid(row=0, column=0, sticky="w")
+            entry_event_id = tk.Entry(delete_window)
+            entry_event_id.grid(row=0, column=1)
+
+            # Button to delete event
+            btn_delete_event = tk.Button(delete_window, text="Delete", command=delete)
+            btn_delete_event.grid(row=1, column=0, columnspan=2)
+
+        def modify_event():
+            # Define the function to modify an event
+            def modify_details(event, detail):
+                # Define the function to modify a specific detail of the event
+                def save_changes():
+
+                    try:
+                        if detail == "Event ID":
+                            e_ID = entry_detail.get().strip()
+                            if not e_ID.replace(" ", "").isdigit():
+                                raise ValueError("ID must contain only numbers.")
+                            event.e_ID = e_ID
+                        elif detail == "Date":
+                            date = entry_detail.get().strip()
+                            if not re.match(r"^\d{1,2}-\d{1,2}-\d{4}$", date):
+                                raise ValueError("Date must be in the form of DD-MM-YYYY.")
+                            event.date = date
+                        elif detail == "Time":
+                            time = int(entry_detail.get())
+                            if not re.match(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", time):
+                                raise ValueError("Time must be in the form of HH:MM.")
+                            event.time = time
+                        elif detail == "Duration":
+                            duration = entry_detail.get().strip()
+                            if not duration.isdigit() or not (1 <= int(duration) <= 10):
+                                raise ValueError("Duration must be a number between 1 and 10.")
+                            event.duration = duration
+                        elif detail == "Guest ID":
+                            gst_ID = entry_detail.get().strip()
+                            if not re.match(r"^\d+(,\d+)*$", gst_ID):
+                                raise ValueError("Guest IDs must be numbers separated by commas.")
+                            event.gst_ID = gst_ID
+
+                        messagebox.showinfo("Success", f"Employee {detail} modified successfully.")
+                        modify_window.destroy()
+                    except ValueError as ve:
+                        messagebox.showerror("Error", str(ve))
+
+                    # Create a new window for modifying the selected detail
+
+                modify_window = tk.Toplevel()
+                modify_window.title(f"Modify {detail}")
+
+                # Label and entry field for the selected detail
+                lbl_detail = tk.Label(modify_window, text=f"{detail}:")
+                lbl_detail.grid(row=0, column=0, sticky="w")
+                entry_detail = tk.Entry(modify_window)
+                entry_detail.grid(row=0, column=1)
+
+                # Set default value in entry field based on the selected detail
+                if detail == "ID":
+                    entry_detail.insert(0, event.e_ID)
+                elif detail == "Date":
+                    entry_detail.insert(0, event.date)
+                elif detail == "Time":
+                    entry_detail.insert(0, event.time)
+                elif detail == "Duration":
+                    entry_detail.insert(0, event.duration)
+                elif detail == "Guest ID":
+                    entry_detail.insert(0, event.gst_ID)
+
+                # Button to save the changes
+                btn_save = tk.Button(modify_window, text="Save Changes", command=save_changes)
+                btn_save.grid(row=1, column=0, columnspan=2)
+
+
+            def verify_id():
+                # Define the function to verify Event ID
+                try:
+                    # Retrieve the Event ID entered by the user
+                    event_id = entry_event_id.get()
+                    for event in self.events:
+                        if event.e_ID == event_id:
+                            # If the ID is correct, show the modify menu
+                            modify_window = tk.Toplevel()
+                            modify_window.title("Modify Event Details")
+
+                            # Create a menu with different options for modifying event details
+                            options = ["Event ID", "Date", "Time", "Duration", "Guest IDs"]
+                            for i, option in enumerate(options):
+                                btn_option = tk.Button(modify_window, text=option,
+                                                       command=lambda o=option: modify_details(event, o))
+                                btn_option.grid(row=i, column=0, columnspan=2)
+
+                            return
+                    messagebox.showerror("Error", "Event not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid event ID.")
+
+            # Create a new window for verifying Event ID
+            verify_window = tk.Toplevel(self.master)
+            verify_window.title("Verify Event ID")
+
+            # Label and entry field for Event ID
+            lbl_id = tk.Label(verify_window, text="Event ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_event_id = tk.Entry(verify_window)
+            entry_event_id.grid(row=0, column=1)
+
+            # Button to verify Event ID
+            btn_verify = tk.Button(verify_window, text="Verify", command=verify_id)
+            btn_verify.grid(row=1, column=0, columnspan=2)
+
+        def display_event():
+            # Define the function to display event details
+            def display():
+                try:
+                    # Retrieve the Event ID entered by the user
+                    event_id = entry_event_id.get()
+                    for event in self.events:
+                        if event.e_ID == event_id:
+                            # If the event is found, print its details
+                            print("Event ID:", event.e_ID)
+                            print("Theme:", event.theme)
+                            print("Date:", event.date)
+                            print("Time:", event.time)
+                            print("Duration:", event.duration)
+                            print("Venue Address:", event.v_address)
+                            print("Client ID:", event.clt_ID)
+                            print("Catering:", event.catering)
+                            print("Cleaning:", event.cleaning)
+                            print("Decoration:", event.decoration)
+                            print("Entertainment:", event.entertainment)
+                            print("Furniture:", event.furniture)
+                            print("Guest IDs:", ", ".join(event.gst_ID))
+                            return
+                    # If event not found, show an error message
+                    messagebox.showerror("Error", "Event not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid event ID.")
+
+            # Create a new window for displaying event details
+            display_window = tk.Toplevel(self.master)
+            display_window.title("Display Event Details")
+
+            # Label and entry field for Event ID
+            lbl_id = tk.Label(display_window, text="Event ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_event_id = tk.Entry(display_window)
+            entry_event_id.grid(row=0, column=1)
+
+            # Button to display event details
+            btn_display = tk.Button(display_window, text="Display", command=display)
+            btn_display.grid(row=1, column=0, columnspan=2)
+
+            # It's important to keep a reference to entry_event_id to avoid garbage collection
+            display_window.entry_event_id = entry_event_id
+
+        def generate_invoice():
+            # Define the function to generate an invoice for the event
+            def display_invoice():
+                try:
+                    # Retrieve the Event ID entered by the user
+                    event_id = entry_event_id.get()
+                    for event in self.events:
+                        if event.e_ID == event_id:
+                            # If the event is found, display its invoice
+                            invoice_window = tk.Toplevel()
+                            invoice_window.title(f"Event {event.e_ID} Invoice")
+
+                            # Calculate and display charges for each service
+                            services = {
+                                "Venue": 10000,
+                                "Catering": 15000,
+                                "Cleaning": 7000,
+                                "Decoration": 5000,
+                                "Entertainment": 11000,
+                                "Furniture": 9000
+                            }
+
+                            total_charge = 0
+                            row = 0
+                            for service, charge in services.items():
+                                lbl_service = tk.Label(invoice_window, text=f"{service}:")
+                                lbl_service.grid(row=row, column=0, sticky="w")
+                                lbl_charge = tk.Label(invoice_window, text=f"{charge} AED")
+                                lbl_charge.grid(row=row, column=1, sticky="w")
+                                total_charge += charge
+                                row += 1
+
+                            # Display total charge
+                            lbl_total = tk.Label(invoice_window, text=f"Total: {total_charge} AED")
+                            lbl_total.grid(row=row, column=0, columnspan=2)
+
+                            return
+                    # If event not found, show an error message
+                    messagebox.showerror("Error", "Event not found.")
+                except ValueError:
+                    messagebox.showerror("Error", "Please enter a valid event ID.")
+
+            # Create a new window for generating the invoice
+            invoice_window = tk.Toplevel(self.master)
+            invoice_window.title("Generate Invoice")
+
+            # Label and entry field for Event ID
+            lbl_id = tk.Label(invoice_window, text="Event ID:")
+            lbl_id.grid(row=0, column=0, sticky="w")
+            entry_event_id = tk.Entry(invoice_window)
+            entry_event_id.grid(row=0, column=1)
+
+            # Button to display the invoice
+            btn_display = tk.Button(invoice_window, text="Display Invoice", command=display_invoice)
+            btn_display.grid(row=1, column=0, columnspan=2)
+
+            # It's important to keep a reference to entry_event_id to avoid garbage collection
+            invoice_window.entry_event_id = entry_event_id
+
         event_window = tk.Toplevel(self.master)
         event_window.title("Manage Events")
 
@@ -245,14 +481,17 @@ class IntegratedSystemGUI:
             return
         btn_add.pack()
 
-        #btn_delete = tk.Button(event_window, text="Delete Event", command=delete_event)
-        #btn_delete.pack()
+        btn_delete = tk.Button(event_window, text="Delete Event", command=delete_event)
+        btn_delete.pack()
 
-        #btn_modify = tk.Button(event_window, text="Modify Event", command=modify_event)
-        #btn_modify.pack()
+        btn_modify = tk.Button(event_window, text="Modify Event", command=modify_event)
+        btn_modify.pack()
 
-        #btn_display = tk.Button(event_window, text="Display Event", command=display_event)
-        #btn_display.pack()
+        btn_display = tk.Button(event_window, text="Display Event", command=display_event)
+        btn_display.pack()
+
+        btn_display = tk.Button(event_window, text="Display Invoice", command=generate_invoice)
+        btn_display.pack()
 
 
     def manage_employees(self):
@@ -285,7 +524,7 @@ class IntegratedSystemGUI:
                         return
 
                     # Check if emp_id already exists
-                    for emp in employees:
+                    for emp in self.employees:
                         if emp.emp_ID == emp_id:
                             messagebox.showerror("Error", "Employee ID already exists.")
                             return
@@ -313,7 +552,7 @@ class IntegratedSystemGUI:
 
                     # Create a new employee object
                     new_employee = Employee(name, emp_id, dept, job_title, age, dob, passport)
-                    employees.append(new_employee)
+                    self.employees.append(new_employee)
 
                     # Close the add window
                     add_window.destroy()
@@ -371,9 +610,9 @@ class IntegratedSystemGUI:
             def delete():
                 try:
                     emp_id = entry_id.get()
-                    for emp in employees:
+                    for emp in self.employees:
                         if emp.emp_ID == emp_id:
-                            employees.remove(emp)
+                            self.employees.remove(emp)
                             messagebox.showinfo("Success", "Employee deleted successfully.")
                             delete_window.destroy()
                             return
@@ -463,7 +702,7 @@ class IntegratedSystemGUI:
                 try:
                     # Function to verify Employee ID
                     emp_id = entry_id.get()
-                    for emp in employees:
+                    for emp in self.employees:
                         if emp.emp_ID == emp_id:
                             # If ID is correct, show the modify menu
                             nonlocal modify_window
@@ -500,7 +739,7 @@ class IntegratedSystemGUI:
             def display():
                 try:
                     emp_id = entry_id.get()
-                    for emp in employees:
+                    for emp in self.employees:
                         if emp.emp_ID == emp_id:
                             emp.display_employee()  # Call the display_employee method of the Employee class
                             return
@@ -533,7 +772,7 @@ class IntegratedSystemGUI:
                 # Find employee and manager objects
                 employee = None
                 manager = None
-                for emp in employees:
+                for emp in self.employees:
                     if emp.emp_ID == emp_id:
                         employee = emp
                     if emp.emp_ID == manager_id:
@@ -1456,8 +1695,23 @@ def main():
     app = IntegratedSystemGUI(root)
     root.mainloop()
 
+    data_to_pickle = {
+        "clients": app.clients,
+        "guests": app.guests,
+        "venues": app.venues,
+        "suppliers": app.suppliers,
+        "events": app.events,
+        "employees": app.employees
+    }
+
+    with open('integrated_system_data.pkl', 'wb') as f:
+        pickle.dump(data_to_pickle, f)
+
+
+# Pickle the instance
+
+
 if __name__ == "__main__":
-    employees = []
     main()
 
 
