@@ -11,16 +11,27 @@ class Theme(Enum):
 
 class Event:
   """Class to represent an Event"""
-  def __init__(self, e_ID='', theme=Theme.W, client=None):
+  def __init__(self, e_ID, theme, date,time, duration, v_address, clt_ID, catering, cleaning, decoration, entertainment, furniture, gst_ID):
     self.e_ID = e_ID
     self.theme = theme
-    self.client = Client(client) if client is not None else None
+    self.date =  date #Client(clt_ID) if clt_ID is not None else None
+    self.time = time
+    self.duration = duration
+    self.v_address = v_address
+    self.clt_ID = clt_ID
+    self.catering = catering
+    self.cleaning = cleaning
+    self.decoration = decoration
+    self.entertainment = entertainment
+    self.furniture = furniture
+    self.gst_ID = gst_ID
+
 
   def set_e_ID(self, e_ID):
       self.e_ID = e_ID
 
-  def set_client(self, client):
-      self.client = client
+  def set_clt_ID(self, clt_ID):
+      self.clt_ID = clt_ID
   def set_theme(self, theme):
       self.theme = theme
 
@@ -28,18 +39,21 @@ class Event:
   def get_e_ID(self):
       return self.e_ID
 
-  def get_client(self):
-      return self.client
+  def get_clt_ID(self):
+      return self.clt_ID
 
   def get_theme(self):
       return self.theme
 
+  def add_guest(self, guest):
+      self.guests.append(guest)
 
-  def add_event(self, events, e_ID, theme, client,):
+
+  def add_event(self, events, e_ID, theme, clt_ID,):
       # Validation
       if not (e_ID.isdigit()):
           raise ValueError("Event ID must contain only numbers.")
-      if not (client.isdigit()):
+      if not (clt_ID.isdigit()):
           raise ValueError("Client ID must contain only numbers.")
 
           # Check if the ID already exists
@@ -47,7 +61,7 @@ class Event:
           if event.e_ID == e_ID:
               raise ValueError("Event with the same ID already exists.")
 
-      new_event = Event(e_ID, theme,  client)
+      new_event = Event(e_ID, theme,  clt_ID)
       events.append(new_event)
       return new_event
 
