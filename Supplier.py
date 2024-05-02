@@ -10,7 +10,7 @@ class S_Type(Enum):
 
 class Supplier:
     """Class to represent a supplier"""
-    def __init__(self, s_name='', s_ID='', s_type=S_Type.C, s_address='', s_contact_details=''):
+    def __init__(self, s_name='', s_ID=0, s_type=S_Type.C, s_address='', s_contact_details=''):
         self.s_name = s_name
         self.s_ID = s_ID
         self.s_type = s_type
