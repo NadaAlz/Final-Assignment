@@ -1784,7 +1784,7 @@ def on_close(root, app):
 
 
 
-# Pickle the instance
+
 
 
 if __name__ == "__main__":
